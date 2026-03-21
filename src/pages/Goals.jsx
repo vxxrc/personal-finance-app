@@ -19,6 +19,7 @@ const Goals = () => {
     targetDate: '',
     type: 'short-term',
     useNetWorth: true,
+    monthlyInvestment: '',
   });
 
   const handleEdit = (goal) => {
@@ -29,6 +30,7 @@ const Goals = () => {
       targetDate: goal.targetDate.split('T')[0],
       type: goal.type,
       useNetWorth: goal.useNetWorth,
+      monthlyInvestment: (goal.monthlyInvestment || 0).toString(),
     });
     setIsFormOpen(true);
   };
@@ -44,6 +46,7 @@ const Goals = () => {
           targetDate: new Date(formData.targetDate).toISOString(),
           type: formData.type,
           useNetWorth: formData.useNetWorth,
+          monthlyInvestment: parseFloat(formData.monthlyInvestment) || 0,
         });
       } else {
         // Add new goal
@@ -54,6 +57,7 @@ const Goals = () => {
           type: formData.type,
           useNetWorth: formData.useNetWorth,
           currentAmount: formData.useNetWorth ? netWorth : 0,
+          monthlyInvestment: parseFloat(formData.monthlyInvestment) || 0,
         });
       }
       setFormData({
@@ -62,6 +66,7 @@ const Goals = () => {
         targetDate: '',
         type: 'short-term',
         useNetWorth: true,
+        monthlyInvestment: '',
       });
       setEditingGoal(null);
       setIsFormOpen(false);
@@ -77,6 +82,7 @@ const Goals = () => {
       targetDate: '',
       type: 'short-term',
       useNetWorth: true,
+      monthlyInvestment: '',
     });
     setEditingGoal(null);
     setIsFormOpen(false);
@@ -122,7 +128,8 @@ const Goals = () => {
               const monthlySavings = calculateMonthlySavingsNeeded(
                 currentAmount,
                 goal.targetAmount,
-                new Date(goal.targetDate)
+                new Date(goal.targetDate),
+                goal.monthlyInvestment || 0
               );
 
               return (
@@ -176,13 +183,22 @@ const Goals = () => {
                   </div>
 
                   {/* Recommendation */}
-                  {monthlySavings > 0 && (
-                    <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4">
-                      <p className="text-sm text-blue-900 dark:text-blue-300">
-                        💡 Save <strong>{formatCurrency(monthlySavings)}/month</strong> to reach this goal on time
-                      </p>
-                    </div>
-                  )}
+                  <div className="space-y-2">
+                    {goal.monthlyInvestment > 0 && (
+                      <div className="bg-green-50 dark:bg-green-900/20 rounded-lg p-4">
+                        <p className="text-sm text-green-900 dark:text-green-300">
+                          ✓ Already investing <strong>{formatCurrency(goal.monthlyInvestment)}/month</strong>
+                        </p>
+                      </div>
+                    )}
+                    {monthlySavings > 0 && (
+                      <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4">
+                        <p className="text-sm text-blue-900 dark:text-blue-300">
+                          💡 {goal.monthlyInvestment > 0 ? 'Additionally save' : 'Save'} <strong>{formatCurrency(monthlySavings)}/month</strong> to reach this goal on time
+                        </p>
+                      </div>
+                    )}
+                  </div>
                 </div>
               );
             })}
@@ -236,6 +252,23 @@ const Goals = () => {
                   className="w-full px-4 py-3 border-2 border-gray-300 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-500 dark:bg-slate-700 dark:text-white"
                   required
                 />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Monthly Investment (₹)
+                </label>
+                <input
+                  type="number"
+                  step="0.01"
+                  value={formData.monthlyInvestment}
+                  onChange={(e) => setFormData({ ...formData, monthlyInvestment: e.target.value })}
+                  className="w-full px-4 py-3 border-2 border-gray-300 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-500 dark:bg-slate-700 dark:text-white"
+                  placeholder="0.00 (Optional - if you invest regularly)"
+                />
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                  Enter amount if you already invest regularly towards this goal
+                </p>
               </div>
 
               <div>

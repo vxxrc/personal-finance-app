@@ -1,8 +1,6 @@
 import { useState, useEffect } from 'react';
 import { collection, addDoc, query, orderBy, limit, getDocs, deleteDoc, doc, where } from 'firebase/firestore';
-import { db } from '../services/firebase';
-
-const USER_ID = 'user_main';
+import { auth, db } from '../services/firebase';
 
 export const useExpenses = (limitCount = 100) => {
   const [expenses, setExpenses] = useState([]);
@@ -10,14 +8,18 @@ export const useExpenses = (limitCount = 100) => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    loadExpenses();
+    if (auth.currentUser) {
+      loadExpenses();
+    }
   }, [limitCount]);
 
   const loadExpenses = async () => {
+    if (!auth.currentUser) return;
+
     try {
       const q = query(
         collection(db, 'expenses'),
-        where('userId', '==', USER_ID),
+        where('userId', '==', auth.currentUser.uid),
         orderBy('date', 'desc'),
         limit(limitCount)
       );
@@ -36,10 +38,12 @@ export const useExpenses = (limitCount = 100) => {
   };
 
   const addExpense = async (expenseData) => {
+    if (!auth.currentUser) return;
+
     try {
       const expense = {
         ...expenseData,
-        userId: USER_ID,
+        userId: auth.currentUser.uid,
         date: expenseData.date || new Date().toISOString(),
         createdAt: new Date().toISOString()
       };

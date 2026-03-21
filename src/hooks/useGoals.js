@@ -1,8 +1,6 @@
 import { useState, useEffect } from 'react';
 import { collection, addDoc, query, getDocs, updateDoc, doc, where, deleteDoc } from 'firebase/firestore';
-import { db } from '../services/firebase';
-
-const USER_ID = 'user_main';
+import { auth, db } from '../services/firebase';
 
 export const useGoals = () => {
   const [goals, setGoals] = useState([]);
@@ -10,14 +8,18 @@ export const useGoals = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    loadGoals();
+    if (auth.currentUser) {
+      loadGoals();
+    }
   }, []);
 
   const loadGoals = async () => {
+    if (!auth.currentUser) return;
+
     try {
       const q = query(
         collection(db, 'goals'),
-        where('userId', '==', USER_ID)
+        where('userId', '==', auth.currentUser.uid)
       );
       const querySnapshot = await getDocs(q);
       const goalsList = querySnapshot.docs.map(doc => ({
@@ -34,10 +36,12 @@ export const useGoals = () => {
   };
 
   const addGoal = async (goalData) => {
+    if (!auth.currentUser) return;
+
     try {
       const goal = {
         ...goalData,
-        userId: USER_ID,
+        userId: auth.currentUser.uid,
         currentAmount: goalData.currentAmount || 0,
         createdAt: new Date().toISOString()
       };

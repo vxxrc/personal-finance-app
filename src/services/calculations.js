@@ -30,9 +30,10 @@ export const calculateGoalProgress = (current, target) => {
  * @param {number} currentAmount - Current saved amount
  * @param {number} targetAmount - Goal amount
  * @param {Date} targetDate - Goal deadline
- * @returns {number} Monthly savings needed
+ * @param {number} monthlyInvestment - Amount already being invested monthly (default 0)
+ * @returns {number} Additional monthly savings needed
  */
-export const calculateMonthlySavingsNeeded = (currentAmount, targetAmount, targetDate) => {
+export const calculateMonthlySavingsNeeded = (currentAmount, targetAmount, targetDate, monthlyInvestment = 0) => {
   const now = new Date();
   const monthsRemaining = Math.max(
     (targetDate.getFullYear() - now.getFullYear()) * 12 +
@@ -40,7 +41,13 @@ export const calculateMonthlySavingsNeeded = (currentAmount, targetAmount, targe
     1
   );
 
-  const remainingAmount = targetAmount - currentAmount;
+  // Calculate how much the regular investments will contribute by the target date
+  const investmentContribution = monthlyInvestment * monthsRemaining;
+
+  // Remaining amount needed after accounting for regular investments
+  const remainingAmount = targetAmount - currentAmount - investmentContribution;
+
+  // Additional monthly savings needed
   return Math.max(remainingAmount / monthsRemaining, 0);
 };
 

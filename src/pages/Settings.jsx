@@ -1,12 +1,14 @@
 import { useState } from 'react';
-import { Save, Moon, Sun } from 'lucide-react';
+import { Save, Moon, Sun, LogOut } from 'lucide-react';
 import { useProfile } from '../hooks/useProfile';
 import { useTheme } from '../contexts/ThemeContext';
+import { useAuth } from '../contexts/AuthContext';
 import { formatCurrency } from '../services/calculations';
 
 const Settings = () => {
   const { profile, updateProfile, loading } = useProfile();
   const { theme, toggleTheme } = useTheme();
+  const { logout, user } = useAuth();
 
   const [formData, setFormData] = useState({
     bankBalance: profile?.bankBalance || 0,
@@ -204,6 +206,28 @@ const Settings = () => {
             Update these values whenever you receive your salary, pay bills, or make investment changes.
             Your net worth will automatically update based on your daily expense logs.
           </p>
+        </div>
+
+        {/* Account Section */}
+        <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-lg p-6 mt-6">
+          <h2 className="text-lg font-semibold text-gray-800 dark:text-white mb-4">
+            Account
+          </h2>
+          <div className="space-y-4">
+            <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-slate-700 rounded-xl">
+              <div>
+                <p className="text-sm text-gray-500 dark:text-gray-400">Logged in as</p>
+                <p className="font-medium text-gray-800 dark:text-white">{user?.email}</p>
+              </div>
+            </div>
+            <button
+              onClick={logout}
+              className="w-full py-4 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-xl transition-colors flex items-center justify-center gap-2"
+            >
+              <LogOut className="w-5 h-5" />
+              Logout
+            </button>
+          </div>
         </div>
       </div>
     </div>

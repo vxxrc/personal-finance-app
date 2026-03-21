@@ -1,8 +1,6 @@
 import { useState, useEffect } from 'react';
 import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
-import { db } from '../services/firebase';
-
-const USER_ID = 'user_main'; // Single user for now
+import { auth, db } from '../services/firebase';
 
 export const useProfile = () => {
   const [profile, setProfile] = useState(null);
@@ -10,12 +8,16 @@ export const useProfile = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    loadProfile();
+    if (auth.currentUser) {
+      loadProfile();
+    }
   }, []);
 
   const loadProfile = async () => {
+    if (!auth.currentUser) return;
+
     try {
-      const docRef = doc(db, 'profiles', USER_ID);
+      const docRef = doc(db, 'profiles', auth.currentUser.uid);
       const docSnap = await getDoc(docRef);
 
       if (docSnap.exists()) {
@@ -42,8 +44,10 @@ export const useProfile = () => {
   };
 
   const updateProfile = async (updates) => {
+    if (!auth.currentUser) return;
+
     try {
-      const docRef = doc(db, 'profiles', USER_ID);
+      const docRef = doc(db, 'profiles', auth.currentUser.uid);
       await updateDoc(docRef, updates);
       setProfile(prev => ({ ...prev, ...updates }));
     } catch (err) {
