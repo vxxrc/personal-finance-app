@@ -1,14 +1,15 @@
 import { useState } from 'react';
-import { Plus, Target, Trash2 } from 'lucide-react';
+import { Plus, Target, Trash2, Edit2 } from 'lucide-react';
 import { useGoals } from '../hooks/useGoals';
 import { useProfile } from '../hooks/useProfile';
 import { calculateNetWorth, calculateGoalProgress, calculateMonthlySavingsNeeded, formatCurrency } from '../services/calculations';
 import { format } from 'date-fns';
 
 const Goals = () => {
-  const { goals, addGoal, deleteGoal } = useGoals();
+  const { goals, addGoal, updateGoal, deleteGoal } = useGoals();
   const { profile } = useProfile();
   const [isFormOpen, setIsFormOpen] = useState(false);
+  const [editingGoal, setEditingGoal] = useState(null);
 
   const netWorth = calculateNetWorth(profile);
 
@@ -20,17 +21,41 @@ const Goals = () => {
     useNetWorth: true,
   });
 
+  const handleEdit = (goal) => {
+    setEditingGoal(goal);
+    setFormData({
+      name: goal.name,
+      targetAmount: goal.targetAmount.toString(),
+      targetDate: goal.targetDate.split('T')[0],
+      type: goal.type,
+      useNetWorth: goal.useNetWorth,
+    });
+    setIsFormOpen(true);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await addGoal({
-        name: formData.name,
-        targetAmount: parseFloat(formData.targetAmount),
-        targetDate: new Date(formData.targetDate).toISOString(),
-        type: formData.type,
-        useNetWorth: formData.useNetWorth,
-        currentAmount: formData.useNetWorth ? netWorth : 0,
-      });
+      if (editingGoal) {
+        // Update existing goal
+        await updateGoal(editingGoal.id, {
+          name: formData.name,
+          targetAmount: parseFloat(formData.targetAmount),
+          targetDate: new Date(formData.targetDate).toISOString(),
+          type: formData.type,
+          useNetWorth: formData.useNetWorth,
+        });
+      } else {
+        // Add new goal
+        await addGoal({
+          name: formData.name,
+          targetAmount: parseFloat(formData.targetAmount),
+          targetDate: new Date(formData.targetDate).toISOString(),
+          type: formData.type,
+          useNetWorth: formData.useNetWorth,
+          currentAmount: formData.useNetWorth ? netWorth : 0,
+        });
+      }
       setFormData({
         name: '',
         targetAmount: '',
@@ -38,10 +63,23 @@ const Goals = () => {
         type: 'short-term',
         useNetWorth: true,
       });
+      setEditingGoal(null);
       setIsFormOpen(false);
     } catch (error) {
-      alert('Failed to add goal');
+      alert(editingGoal ? 'Failed to update goal' : 'Failed to add goal');
     }
+  };
+
+  const handleCancelEdit = () => {
+    setFormData({
+      name: '',
+      targetAmount: '',
+      targetDate: '',
+      type: 'short-term',
+      useNetWorth: true,
+    });
+    setEditingGoal(null);
+    setIsFormOpen(false);
   };
 
   const handleDelete = async (goalId) => {
@@ -98,12 +136,20 @@ const Goals = () => {
                         Target: {format(new Date(goal.targetDate), 'MMMM dd, yyyy')}
                       </p>
                     </div>
-                    <button
-                      onClick={() => handleDelete(goal.id)}
-                      className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg"
-                    >
-                      <Trash2 className="w-5 h-5" />
-                    </button>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => handleEdit(goal)}
+                        className="p-2 text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg"
+                      >
+                        <Edit2 className="w-5 h-5" />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(goal.id)}
+                        className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg"
+                      >
+                        <Trash2 className="w-5 h-5" />
+                      </button>
+                    </div>
                   </div>
 
                   {/* Progress */}
@@ -143,11 +189,11 @@ const Goals = () => {
           </div>
         )}
 
-        {/* Add Goal Form */}
+        {/* Add/Edit Goal Form */}
         {isFormOpen && (
           <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-lg p-6 mt-4">
             <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-4">
-              New Goal
+              {editingGoal ? 'Edit Goal' : 'New Goal'}
             </h3>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
@@ -238,7 +284,7 @@ const Goals = () => {
               <div className="flex gap-2">
                 <button
                   type="button"
-                  onClick={() => setIsFormOpen(false)}
+                  onClick={handleCancelEdit}
                   className="flex-1 py-3 bg-gray-200 dark:bg-slate-700 text-gray-700 dark:text-gray-300 rounded-xl"
                 >
                   Cancel
@@ -247,7 +293,7 @@ const Goals = () => {
                   type="submit"
                   className="flex-1 py-3 bg-blue-500 text-white rounded-xl"
                 >
-                  Add Goal
+                  {editingGoal ? 'Update Goal' : 'Add Goal'}
                 </button>
               </div>
             </form>

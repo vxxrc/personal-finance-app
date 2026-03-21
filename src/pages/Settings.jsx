@@ -1,10 +1,12 @@
 import { useState } from 'react';
-import { Save } from 'lucide-react';
+import { Save, Moon, Sun } from 'lucide-react';
 import { useProfile } from '../hooks/useProfile';
+import { useTheme } from '../contexts/ThemeContext';
 import { formatCurrency } from '../services/calculations';
 
 const Settings = () => {
   const { profile, updateProfile, loading } = useProfile();
+  const { theme, toggleTheme } = useTheme();
 
   const [formData, setFormData] = useState({
     bankBalance: profile?.bankBalance || 0,
@@ -55,6 +57,41 @@ const Settings = () => {
 
       {/* Content */}
       <div className="max-w-2xl mx-auto px-4 -mt-4">
+        {/* Appearance Settings */}
+        <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-lg p-6 mb-6">
+          <h2 className="text-lg font-semibold text-gray-800 dark:text-white mb-4">
+            Appearance
+          </h2>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              {theme === 'dark' ? (
+                <Moon className="w-5 h-5 text-purple-500" />
+              ) : (
+                <Sun className="w-5 h-5 text-yellow-500" />
+              )}
+              <div>
+                <p className="font-medium text-gray-800 dark:text-white">Dark Mode</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  {theme === 'dark' ? 'Enabled' : 'Disabled'}
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={toggleTheme}
+              className={`relative inline-flex h-8 w-14 items-center rounded-full transition-colors ${
+                theme === 'dark' ? 'bg-purple-600' : 'bg-gray-300'
+              }`}
+            >
+              <span
+                className={`inline-block h-6 w-6 transform rounded-full bg-white transition-transform ${
+                  theme === 'dark' ? 'translate-x-7' : 'translate-x-1'
+                }`}
+              />
+            </button>
+          </div>
+        </div>
+
+        {/* Financial Accounts */}
         <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-lg p-6">
           <h2 className="text-lg font-semibold text-gray-800 dark:text-white mb-6">
             Financial Accounts
