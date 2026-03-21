@@ -2,15 +2,15 @@ import { initializeApp } from 'firebase/app';
 import { getFirestore } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
 
-// Firebase configuration from environment variables
-// Copy .env.example to .env and add your Firebase credentials
+// Firebase configuration
+// These values are safe to expose in client-side code
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
-  appId: import.meta.env.VITE_FIREBASE_APP_ID
+  apiKey: "AIzaSyBg62bcGlGUx5e2SXA8SbWBec5OErEBSrI",
+  authDomain: "personal-finance-app-490c6.firebaseapp.com",
+  projectId: "personal-finance-app-490c6",
+  storageBucket: "personal-finance-app-490c6.firebasestorage.app",
+  messagingSenderId: "788323641848",
+  appId: "1:788323641848:web:e1cff3538670d62be88e0d"
 };
 
 // Initialize Firebase
