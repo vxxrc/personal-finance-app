@@ -1,21 +1,53 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Save, LogOut } from 'lucide-react';
 import { useProfile } from '../hooks/useProfile';
 import { useAuth } from '../contexts/AuthContext';
+
+// Move InputField outside to prevent recreation on every render
+const InputField = ({ label, field, value, onChange }) => (
+  <div>
+    <label className="block text-sm font-medium text-zinc-300 mb-2">
+      {label}
+    </label>
+    <div className="relative">
+      <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm text-zinc-500">₹</span>
+      <input
+        type="number"
+        step="0.01"
+        value={value}
+        onChange={onChange}
+        className="w-full pl-10 pr-4 py-3 bg-black border border-zinc-700 rounded-lg text-white focus:outline-none focus:border-emerald-600"
+      />
+    </div>
+  </div>
+);
 
 const Settings = () => {
   const { profile, updateProfile, loading } = useProfile();
   const { logout, user } = useAuth();
 
   const [formData, setFormData] = useState({
-    bankBalance: profile?.bankBalance || 0,
-    stocksValue: profile?.stocksValue || 0,
-    cryptoValue: profile?.cryptoValue || 0,
-    creditCardDue: profile?.creditCardDue || 0,
-    monthlySalary: profile?.monthlySalary || 0,
+    bankBalance: 0,
+    stocksValue: 0,
+    cryptoValue: 0,
+    creditCardDue: 0,
+    monthlySalary: 0,
   });
 
   const [isSaving, setIsSaving] = useState(false);
+
+  // Sync formData with profile when it loads
+  useEffect(() => {
+    if (profile) {
+      setFormData({
+        bankBalance: profile.bankBalance || 0,
+        stocksValue: profile.stocksValue || 0,
+        cryptoValue: profile.cryptoValue || 0,
+        creditCardDue: profile.creditCardDue || 0,
+        monthlySalary: profile.monthlySalary || 0,
+      });
+    }
+  }, [profile]);
 
   const handleChange = (field, value) => {
     setFormData(prev => ({
@@ -44,24 +76,6 @@ const Settings = () => {
     );
   }
 
-  const InputField = ({ label, field }) => (
-    <div>
-      <label className="block text-sm font-medium text-zinc-300 mb-2">
-        {label}
-      </label>
-      <div className="relative">
-        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm text-zinc-500">₹</span>
-        <input
-          type="number"
-          step="0.01"
-          value={formData[field]}
-          onChange={(e) => handleChange(field, e.target.value)}
-          className="w-full pl-10 pr-4 py-3 bg-black border border-zinc-700 rounded-lg text-white focus:outline-none focus:border-emerald-600"
-        />
-      </div>
-    </div>
-  );
-
   return (
     <div className="min-h-screen bg-black pb-24">
       {/* Header */}
@@ -81,11 +95,36 @@ const Settings = () => {
           </h2>
 
           <div className="space-y-4">
-            <InputField label="Bank Balance" field="bankBalance" />
-            <InputField label="Stocks Value" field="stocksValue" />
-            <InputField label="Crypto Value" field="cryptoValue" />
-            <InputField label="Credit Card Due" field="creditCardDue" />
-            <InputField label="Monthly Salary" field="monthlySalary" />
+            <InputField
+              label="Bank Balance"
+              field="bankBalance"
+              value={formData.bankBalance}
+              onChange={(e) => handleChange('bankBalance', e.target.value)}
+            />
+            <InputField
+              label="Stocks Value"
+              field="stocksValue"
+              value={formData.stocksValue}
+              onChange={(e) => handleChange('stocksValue', e.target.value)}
+            />
+            <InputField
+              label="Crypto Value"
+              field="cryptoValue"
+              value={formData.cryptoValue}
+              onChange={(e) => handleChange('cryptoValue', e.target.value)}
+            />
+            <InputField
+              label="Credit Card Due"
+              field="creditCardDue"
+              value={formData.creditCardDue}
+              onChange={(e) => handleChange('creditCardDue', e.target.value)}
+            />
+            <InputField
+              label="Monthly Salary"
+              field="monthlySalary"
+              value={formData.monthlySalary}
+              onChange={(e) => handleChange('monthlySalary', e.target.value)}
+            />
           </div>
 
           {/* Save Button */}
