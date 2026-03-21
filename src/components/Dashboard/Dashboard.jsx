@@ -96,7 +96,7 @@ const Dashboard = () => {
   return (
     <div className="min-h-screen bg-black pb-24">
       {/* Header */}
-      <div className="bg-zinc-900 border-b border-zinc-800 p-6">
+      <div className="bg-zinc-900 border-b border-zinc-800 pt-[calc(1.5rem+env(safe-area-inset-top))] pb-6 px-6">
         <div className="max-w-2xl mx-auto">
           <h1 className="text-xl font-semibold text-white">Finance</h1>
           <p className="text-sm text-zinc-400 mt-1">Dashboard</p>

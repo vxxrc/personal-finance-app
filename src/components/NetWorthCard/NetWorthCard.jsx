@@ -15,10 +15,10 @@ const NetWorthCard = ({ profile }) => {
   ];
 
   return (
-    <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-lg p-6 mb-6">
+    <div className="bg-zinc-900 rounded-2xl shadow-lg p-6 mb-6 border border-zinc-800">
       {/* Net Worth Display */}
       <div className="text-center mb-6">
-        <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">Net Worth</p>
+        <p className="text-sm text-zinc-400 mb-1">Net Worth</p>
         <h1 className={`text-4xl font-bold ${netWorth >= 0 ? 'text-green-600' : 'text-red-600'}`}>
           {formatCurrency(netWorth)}
         </h1>
@@ -27,12 +27,12 @@ const NetWorthCard = ({ profile }) => {
       {/* Breakdown Grid */}
       <div className="grid grid-cols-2 gap-4">
         {items.map(({ label, value, icon: Icon, color, negative }) => (
-          <div key={label} className="bg-gray-50 dark:bg-slate-700 rounded-xl p-4">
+          <div key={label} className="bg-black rounded-xl p-4 border border-zinc-800">
             <div className="flex items-center gap-2 mb-2">
               <Icon className={`w-5 h-5 ${color}`} />
-              <span className="text-xs text-gray-600 dark:text-gray-300">{label}</span>
+              <span className="text-xs text-zinc-300">{label}</span>
             </div>
-            <p className={`text-xl font-semibold ${negative ? 'text-red-600' : 'text-gray-800 dark:text-white'}`}>
+            <p className={`text-xl font-semibold ${negative ? 'text-red-600' : 'text-white'}`}>
               {negative && value > 0 ? '-' : ''}{formatCurrency(value)}
             </p>
           </div>

@@ -100,7 +100,7 @@ const Goals = () => {
   return (
     <div className="min-h-screen bg-black pb-24">
       {/* Header */}
-      <div className="bg-zinc-900 border-b border-zinc-800 p-6">
+      <div className="bg-zinc-900 border-b border-zinc-800 pt-[calc(1.5rem+env(safe-area-inset-top))] pb-6 px-6">
         <div className="max-w-2xl mx-auto">
           <h1 className="text-2xl font-bold text-white mb-1">Financial Goals</h1>
           <p className="text-zinc-400">Set and track your targets</p>

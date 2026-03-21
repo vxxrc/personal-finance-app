@@ -22,11 +22,11 @@ const ExpenseList = ({ expenses, onDelete }) => {
 
   if (todayExpenses.length === 0) {
     return (
-      <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-lg p-6 mb-6">
-        <h2 className="text-xl font-semibold text-gray-800 dark:text-white mb-4">
+      <div className="bg-zinc-900 rounded-2xl shadow-lg p-6 mb-6 border border-zinc-800">
+        <h2 className="text-xl font-semibold text-white mb-4">
           Today's Expenses
         </h2>
-        <p className="text-gray-500 dark:text-gray-400 text-center py-8">
+        <p className="text-zinc-400 text-center py-8">
           No expenses logged today
         </p>
       </div>
@@ -34,13 +34,13 @@ const ExpenseList = ({ expenses, onDelete }) => {
   }
 
   return (
-    <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-lg p-6 mb-6">
+    <div className="bg-zinc-900 rounded-2xl shadow-lg p-6 mb-6 border border-zinc-800">
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-semibold text-gray-800 dark:text-white">
+        <h2 className="text-xl font-semibold text-white">
           Today's Expenses
         </h2>
         <div className="text-right">
-          <p className="text-sm text-gray-500 dark:text-gray-400">Total</p>
+          <p className="text-sm text-zinc-400">Total</p>
           <p className="text-xl font-bold text-red-600">{formatCurrency(todayTotal)}</p>
         </div>
       </div>
@@ -52,33 +52,33 @@ const ExpenseList = ({ expenses, onDelete }) => {
           return (
             <div
               key={expense.id}
-              className="flex items-center justify-between bg-gray-50 dark:bg-slate-700 rounded-xl p-4 hover:bg-gray-100 dark:hover:bg-slate-600 transition-colors"
+              className="flex items-center justify-between bg-black rounded-xl p-4 hover:bg-zinc-800 transition-colors border border-zinc-800"
             >
               <div className="flex items-center gap-3 flex-1">
-                <div className="p-2 bg-blue-100 dark:bg-blue-900 rounded-lg">
-                  <Icon className="w-5 h-5 text-blue-600 dark:text-blue-300" />
+                <div className="p-2 bg-blue-900 rounded-lg">
+                  <Icon className="w-5 h-5 text-blue-300" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="font-medium text-gray-800 dark:text-white">
+                  <p className="font-medium text-white">
                     {expense.subCategory}
                   </p>
                   {expense.note && (
-                    <p className="text-sm text-gray-500 dark:text-gray-400 truncate">
+                    <p className="text-sm text-zinc-400 truncate">
                       {expense.note}
                     </p>
                   )}
-                  <p className="text-xs text-gray-400 dark:text-gray-500">
+                  <p className="text-xs text-zinc-500">
                     {format(new Date(expense.date), 'h:mm a')} • {expense.paymentMethod === 'credit' ? 'Credit Card' : 'Bank'}
                   </p>
                 </div>
               </div>
               <div className="flex items-center gap-3">
-                <p className="font-semibold text-gray-800 dark:text-white">
+                <p className="font-semibold text-white">
                   {formatCurrency(expense.amount)}
                 </p>
                 <button
                   onClick={() => onDelete(expense.id)}
-                  className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                  className="p-2 text-red-500 hover:bg-red-900/20 rounded-lg transition-colors"
                 >
                   <Trash2 className="w-5 h-5" />
                 </button>
