@@ -98,25 +98,25 @@ const Goals = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-slate-900 pb-24">
+    <div className="min-h-screen bg-black pb-24">
       {/* Header */}
-      <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-6 pb-8">
+      <div className="bg-zinc-900 border-b border-zinc-800 p-6">
         <div className="max-w-2xl mx-auto">
-          <h1 className="text-2xl font-bold mb-1">Financial Goals</h1>
-          <p className="text-blue-100">Set and track your targets</p>
+          <h1 className="text-2xl font-bold text-white mb-1">Financial Goals</h1>
+          <p className="text-zinc-400">Set and track your targets</p>
         </div>
       </div>
 
       {/* Content */}
-      <div className="max-w-2xl mx-auto px-4 -mt-4">
+      <div className="max-w-2xl mx-auto px-4 py-6">
         {/* Goals List */}
         {goals.length === 0 ? (
-          <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-lg p-8 text-center">
-            <Target className="w-16 h-16 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-2">
+          <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-8 text-center">
+            <Target className="w-16 h-16 text-zinc-700 mx-auto mb-4" />
+            <h3 className="text-lg font-semibold text-white mb-2">
               No goals yet
             </h3>
-            <p className="text-gray-600 dark:text-gray-400 mb-4">
+            <p className="text-zinc-400 mb-4">
               Start by adding your first financial goal
             </p>
           </div>
@@ -133,26 +133,26 @@ const Goals = () => {
               );
 
               return (
-                <div key={goal.id} className="bg-white dark:bg-slate-800 rounded-2xl shadow-lg p-6">
+                <div key={goal.id} className="bg-zinc-900 border border-zinc-800 rounded-lg p-6">
                   <div className="flex justify-between items-start mb-4">
                     <div>
-                      <h3 className="text-xl font-semibold text-gray-800 dark:text-white">
+                      <h3 className="text-xl font-semibold text-white">
                         {goal.name}
                       </h3>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">
+                      <p className="text-sm text-zinc-400">
                         Target: {format(new Date(goal.targetDate), 'MMMM dd, yyyy')}
                       </p>
                     </div>
                     <div className="flex gap-2">
                       <button
                         onClick={() => handleEdit(goal)}
-                        className="p-2 text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg"
+                        className="p-2 text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-lg transition-colors"
                       >
                         <Edit2 className="w-5 h-5" />
                       </button>
                       <button
                         onClick={() => handleDelete(goal.id)}
-                        className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg"
+                        className="p-2 text-red-400 hover:text-red-300 hover:bg-zinc-800 rounded-lg transition-colors"
                       >
                         <Trash2 className="w-5 h-5" />
                       </button>
@@ -162,22 +162,22 @@ const Goals = () => {
                   {/* Progress */}
                   <div className="mb-4">
                     <div className="flex justify-between text-sm mb-2">
-                      <span className="text-gray-600 dark:text-gray-400">
+                      <span className="text-zinc-400">
                         {formatCurrency(currentAmount)}
                       </span>
-                      <span className="font-semibold text-gray-800 dark:text-white">
+                      <span className="font-semibold text-white">
                         {formatCurrency(goal.targetAmount)}
                       </span>
                     </div>
-                    <div className="w-full bg-gray-200 dark:bg-slate-700 rounded-full h-4">
+                    <div className="w-full bg-zinc-800 rounded-full h-3">
                       <div
                         className={`h-full rounded-full transition-all ${
-                          progress >= 100 ? 'bg-green-500' : 'bg-blue-500'
+                          progress >= 100 ? 'bg-emerald-600' : 'bg-emerald-600'
                         }`}
                         style={{ width: `${Math.min(progress, 100)}%` }}
                       />
                     </div>
-                    <p className="text-right text-sm text-gray-600 dark:text-gray-400 mt-1">
+                    <p className="text-right text-sm text-zinc-400 mt-1">
                       {progress.toFixed(1)}% complete
                     </p>
                   </div>
@@ -185,16 +185,16 @@ const Goals = () => {
                   {/* Recommendation */}
                   <div className="space-y-2">
                     {goal.monthlyInvestment > 0 && (
-                      <div className="bg-green-50 dark:bg-green-900/20 rounded-lg p-4">
-                        <p className="text-sm text-green-900 dark:text-green-300">
-                          ✓ Already investing <strong>{formatCurrency(goal.monthlyInvestment)}/month</strong>
+                      <div className="bg-zinc-800 border border-zinc-700 rounded-lg p-3">
+                        <p className="text-sm text-zinc-300">
+                          Already investing <strong className="text-white">{formatCurrency(goal.monthlyInvestment)}/month</strong>
                         </p>
                       </div>
                     )}
                     {monthlySavings > 0 && (
-                      <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4">
-                        <p className="text-sm text-blue-900 dark:text-blue-300">
-                          💡 {goal.monthlyInvestment > 0 ? 'Additionally save' : 'Save'} <strong>{formatCurrency(monthlySavings)}/month</strong> to reach this goal on time
+                      <div className="bg-zinc-800 border border-zinc-700 rounded-lg p-3">
+                        <p className="text-sm text-zinc-300">
+                          {goal.monthlyInvestment > 0 ? 'Additionally save' : 'Save'} <strong className="text-white">{formatCurrency(monthlySavings)}/month</strong> to reach this goal on time
                         </p>
                       </div>
                     )}
@@ -207,27 +207,27 @@ const Goals = () => {
 
         {/* Add/Edit Goal Form */}
         {isFormOpen && (
-          <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-lg p-6 mt-4">
-            <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-4">
+          <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-6 mt-4">
+            <h3 className="text-lg font-semibold text-white mb-4">
               {editingGoal ? 'Edit Goal' : 'New Goal'}
             </h3>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-zinc-300 mb-2">
                   Goal Name
                 </label>
                 <input
                   type="text"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="w-full px-4 py-3 border-2 border-gray-300 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-500 dark:bg-slate-700 dark:text-white"
+                  className="w-full px-4 py-3 bg-black border border-zinc-700 rounded-lg text-white focus:outline-none focus:border-emerald-600"
                   placeholder="e.g., Save for vacation"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-zinc-300 mb-2">
                   Target Amount
                 </label>
                 <input
@@ -235,54 +235,54 @@ const Goals = () => {
                   step="0.01"
                   value={formData.targetAmount}
                   onChange={(e) => setFormData({ ...formData, targetAmount: e.target.value })}
-                  className="w-full px-4 py-3 border-2 border-gray-300 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-500 dark:bg-slate-700 dark:text-white"
+                  className="w-full px-4 py-3 bg-black border border-zinc-700 rounded-lg text-white focus:outline-none focus:border-emerald-600"
                   placeholder="0.00"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-zinc-300 mb-2">
                   Target Date
                 </label>
                 <input
                   type="date"
                   value={formData.targetDate}
                   onChange={(e) => setFormData({ ...formData, targetDate: e.target.value })}
-                  className="w-full px-4 py-3 border-2 border-gray-300 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-500 dark:bg-slate-700 dark:text-white"
+                  className="w-full px-4 py-3 bg-black border border-zinc-700 rounded-lg text-white focus:outline-none focus:border-emerald-600"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Monthly Investment (₹)
+                <label className="block text-sm font-medium text-zinc-300 mb-2">
+                  Monthly Investment
                 </label>
                 <input
                   type="number"
                   step="0.01"
                   value={formData.monthlyInvestment}
                   onChange={(e) => setFormData({ ...formData, monthlyInvestment: e.target.value })}
-                  className="w-full px-4 py-3 border-2 border-gray-300 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-500 dark:bg-slate-700 dark:text-white"
+                  className="w-full px-4 py-3 bg-black border border-zinc-700 rounded-lg text-white focus:outline-none focus:border-emerald-600"
                   placeholder="0.00 (Optional - if you invest regularly)"
                 />
-                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                <p className="text-xs text-zinc-500 mt-1">
                   Enter amount if you already invest regularly towards this goal
                 </p>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-zinc-300 mb-2">
                   Goal Type
                 </label>
                 <div className="flex gap-2">
                   <button
                     type="button"
                     onClick={() => setFormData({ ...formData, type: 'short-term' })}
-                    className={`flex-1 py-3 rounded-xl font-medium ${
+                    className={`flex-1 py-3 rounded-lg font-medium transition-colors ${
                       formData.type === 'short-term'
-                        ? 'bg-blue-500 text-white'
-                        : 'bg-gray-100 dark:bg-slate-700 text-gray-700 dark:text-gray-300'
+                        ? 'bg-emerald-600 text-white hover:bg-emerald-700'
+                        : 'bg-zinc-800 text-zinc-300 hover:bg-zinc-700'
                     }`}
                   >
                     Short-term
@@ -290,10 +290,10 @@ const Goals = () => {
                   <button
                     type="button"
                     onClick={() => setFormData({ ...formData, type: 'long-term' })}
-                    className={`flex-1 py-3 rounded-xl font-medium ${
+                    className={`flex-1 py-3 rounded-lg font-medium transition-colors ${
                       formData.type === 'long-term'
-                        ? 'bg-purple-500 text-white'
-                        : 'bg-gray-100 dark:bg-slate-700 text-gray-700 dark:text-gray-300'
+                        ? 'bg-emerald-600 text-white hover:bg-emerald-700'
+                        : 'bg-zinc-800 text-zinc-300 hover:bg-zinc-700'
                     }`}
                   >
                     Long-term
@@ -307,9 +307,9 @@ const Goals = () => {
                   id="useNetWorth"
                   checked={formData.useNetWorth}
                   onChange={(e) => setFormData({ ...formData, useNetWorth: e.target.checked })}
-                  className="w-5 h-5 text-blue-500 rounded"
+                  className="w-5 h-5 bg-black border-zinc-700 rounded text-emerald-600 focus:ring-emerald-600"
                 />
-                <label htmlFor="useNetWorth" className="text-sm text-gray-700 dark:text-gray-300">
+                <label htmlFor="useNetWorth" className="text-sm text-zinc-300">
                   Track against total net worth
                 </label>
               </div>
@@ -318,13 +318,13 @@ const Goals = () => {
                 <button
                   type="button"
                   onClick={handleCancelEdit}
-                  className="flex-1 py-3 bg-gray-200 dark:bg-slate-700 text-gray-700 dark:text-gray-300 rounded-xl"
+                  className="flex-1 py-3 bg-zinc-800 text-zinc-300 rounded-lg hover:bg-zinc-700 transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 py-3 bg-blue-500 text-white rounded-xl"
+                  className="flex-1 py-3 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors"
                 >
                   {editingGoal ? 'Update Goal' : 'Add Goal'}
                 </button>
@@ -338,9 +338,9 @@ const Goals = () => {
       {!isFormOpen && (
         <button
           onClick={() => setIsFormOpen(true)}
-          className="fixed bottom-20 right-6 w-16 h-16 bg-blue-500 hover:bg-blue-600 text-white rounded-full shadow-2xl flex items-center justify-center transition-all hover:scale-110"
+          className="fixed bottom-20 right-6 w-14 h-14 bg-emerald-600 hover:bg-emerald-700 text-white rounded-full shadow-lg flex items-center justify-center transition-colors"
         >
-          <Plus className="w-8 h-8" />
+          <Plus className="w-6 h-6" />
         </button>
       )}
     </div>

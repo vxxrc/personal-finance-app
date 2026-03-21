@@ -30,29 +30,29 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-600 via-purple-600 to-pink-500 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-black flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         {/* Logo/Header */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-20 h-20 bg-white rounded-full mb-4 shadow-2xl">
-            <Wallet className="w-10 h-10 text-blue-600" />
+          <div className="inline-flex items-center justify-center w-20 h-20 bg-zinc-900 border border-zinc-800 rounded-full mb-4">
+            <Wallet className="w-10 h-10 text-emerald-600" />
           </div>
           <h1 className="text-4xl font-bold text-white mb-2">Personal Finance</h1>
-          <p className="text-blue-100">Track your wealth journey</p>
+          <p className="text-zinc-400">Track your wealth journey</p>
         </div>
 
         {/* Auth Form */}
-        <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl p-8">
+        <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-8">
           <div className="flex gap-2 mb-6">
             <button
               onClick={() => {
                 setIsLogin(true);
                 setError('');
               }}
-              className={`flex-1 py-3 rounded-xl font-semibold transition-colors ${
+              className={`flex-1 py-3 rounded-lg font-semibold transition-colors ${
                 isLogin
-                  ? 'bg-blue-500 text-white'
-                  : 'bg-gray-100 dark:bg-slate-700 text-gray-700 dark:text-gray-300'
+                  ? 'bg-emerald-600 text-white hover:bg-emerald-700'
+                  : 'bg-zinc-800 text-zinc-300 hover:bg-zinc-700'
               }`}
             >
               Login
@@ -62,10 +62,10 @@ const Auth = () => {
                 setIsLogin(false);
                 setError('');
               }}
-              className={`flex-1 py-3 rounded-xl font-semibold transition-colors ${
+              className={`flex-1 py-3 rounded-lg font-semibold transition-colors ${
                 !isLogin
-                  ? 'bg-blue-500 text-white'
-                  : 'bg-gray-100 dark:bg-slate-700 text-gray-700 dark:text-gray-300'
+                  ? 'bg-emerald-600 text-white hover:bg-emerald-700'
+                  : 'bg-zinc-800 text-zinc-300 hover:bg-zinc-700'
               }`}
             >
               Sign Up
@@ -73,41 +73,41 @@ const Auth = () => {
           </div>
 
           {error && (
-            <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
-              <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
+            <div className="mb-4 p-3 bg-red-900/20 border border-red-800 rounded-lg">
+              <p className="text-sm text-red-400">{error}</p>
             </div>
           )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-zinc-300 mb-2">
                 Email
               </label>
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-4 py-3 border-2 border-gray-300 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-slate-700 dark:text-white"
+                className="w-full px-4 py-3 bg-black border border-zinc-700 rounded-lg text-white focus:outline-none focus:border-emerald-600"
                 placeholder="your@email.com"
                 required
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-zinc-300 mb-2">
                 Password
               </label>
               <input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-3 border-2 border-gray-300 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-slate-700 dark:text-white"
+                className="w-full px-4 py-3 bg-black border border-zinc-700 rounded-lg text-white focus:outline-none focus:border-emerald-600"
                 placeholder="••••••••"
                 required
                 minLength={6}
               />
               {!isLogin && (
-                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                <p className="text-xs text-zinc-500 mt-1">
                   Minimum 6 characters
                 </p>
               )}
@@ -116,7 +116,7 @@ const Auth = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-4 bg-blue-500 hover:bg-blue-600 disabled:bg-gray-400 text-white font-semibold rounded-xl transition-colors flex items-center justify-center gap-2"
+              className="w-full py-4 bg-emerald-600 hover:bg-emerald-700 disabled:bg-zinc-700 disabled:text-zinc-500 text-white font-semibold rounded-lg transition-colors flex items-center justify-center gap-2"
             >
               {loading ? (
                 'Please wait...'
@@ -134,21 +134,21 @@ const Auth = () => {
             </button>
           </form>
 
-          <p className="text-center text-sm text-gray-600 dark:text-gray-400 mt-6">
+          <p className="text-center text-sm text-zinc-400 mt-6">
             {isLogin ? "Don't have an account? " : 'Already have an account? '}
             <button
               onClick={() => {
                 setIsLogin(!isLogin);
                 setError('');
               }}
-              className="text-blue-500 font-semibold hover:underline"
+              className="text-emerald-600 font-semibold hover:text-emerald-500"
             >
               {isLogin ? 'Sign up' : 'Login'}
             </button>
           </p>
         </div>
 
-        <p className="text-center text-white text-sm mt-6 opacity-80">
+        <p className="text-center text-zinc-500 text-sm mt-6">
           Your data is securely stored and synced across devices
         </p>
       </div>
