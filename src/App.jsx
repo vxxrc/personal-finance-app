@@ -15,7 +15,7 @@ function App() {
   }
 
   return (
-    <BrowserRouter>
+    <BrowserRouter basename="/personal-finance-app">
       <div className="min-h-screen bg-gray-50 dark:bg-slate-900">
         <Routes>
           <Route path="/" element={<Dashboard />} />
