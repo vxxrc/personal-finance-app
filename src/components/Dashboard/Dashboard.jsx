@@ -94,17 +94,17 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-slate-900 pb-24">
+    <div className="min-h-screen bg-black pb-24">
       {/* Header */}
-      <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-6 pb-8">
+      <div className="bg-zinc-900 border-b border-zinc-800 p-6">
         <div className="max-w-2xl mx-auto">
-          <h1 className="text-2xl font-bold mb-1">Personal Finance</h1>
-          <p className="text-blue-100">Track your wealth journey</p>
+          <h1 className="text-xl font-semibold text-white">Finance</h1>
+          <p className="text-sm text-zinc-400 mt-1">Dashboard</p>
         </div>
       </div>
 
       {/* Content */}
-      <div className="max-w-2xl mx-auto px-4 -mt-4">
+      <div className="max-w-2xl mx-auto px-4 mt-6">
         <NetWorthCard profile={profile} />
         <GoalTracker goals={goals} netWorth={netWorth} />
         <ExpenseList expenses={expenses} onDelete={handleDeleteExpense} />
@@ -113,9 +113,9 @@ const Dashboard = () => {
       {/* Floating Add Button */}
       <button
         onClick={() => setIsExpenseFormOpen(true)}
-        className="fixed bottom-20 right-6 w-16 h-16 bg-blue-500 hover:bg-blue-600 text-white rounded-full shadow-2xl flex items-center justify-center transition-all hover:scale-110 active:scale-95 z-40"
+        className="fixed bottom-20 right-6 w-14 h-14 bg-emerald-600 hover:bg-emerald-700 text-white rounded-full flex items-center justify-center transition-colors z-40"
       >
-        <Plus className="w-8 h-8" />
+        <Plus className="w-6 h-6" />
       </button>
 
       {/* Expense Form Modal */}

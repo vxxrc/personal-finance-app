@@ -1,13 +1,10 @@
 import { useState } from 'react';
-import { Save, Moon, Sun, LogOut } from 'lucide-react';
+import { Save, LogOut } from 'lucide-react';
 import { useProfile } from '../hooks/useProfile';
-import { useTheme } from '../contexts/ThemeContext';
 import { useAuth } from '../contexts/AuthContext';
-import { formatCurrency } from '../services/calculations';
 
 const Settings = () => {
   const { profile, updateProfile, loading } = useProfile();
-  const { theme, toggleTheme } = useTheme();
   const { logout, user } = useAuth();
 
   const [formData, setFormData] = useState({
@@ -41,190 +38,82 @@ const Settings = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p className="text-gray-600 dark:text-gray-400">Loading...</p>
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <p className="text-zinc-400">Loading...</p>
       </div>
     );
   }
 
+  const InputField = ({ label, field }) => (
+    <div>
+      <label className="block text-sm font-medium text-zinc-300 mb-2">
+        {label}
+      </label>
+      <div className="relative">
+        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm text-zinc-500">₹</span>
+        <input
+          type="number"
+          step="0.01"
+          value={formData[field]}
+          onChange={(e) => handleChange(field, e.target.value)}
+          className="w-full pl-10 pr-4 py-3 bg-black border border-zinc-700 rounded-lg text-white focus:outline-none focus:border-emerald-600"
+        />
+      </div>
+    </div>
+  );
+
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-slate-900 pb-24">
+    <div className="min-h-screen bg-black pb-24">
       {/* Header */}
-      <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-6 pb-8">
+      <div className="bg-zinc-900 border-b border-zinc-800 p-6">
         <div className="max-w-2xl mx-auto">
-          <h1 className="text-2xl font-bold mb-1">Settings</h1>
-          <p className="text-blue-100">Update your financial profile</p>
+          <h1 className="text-xl font-semibold text-white">Settings</h1>
+          <p className="text-sm text-zinc-400 mt-1">Manage your account</p>
         </div>
       </div>
 
       {/* Content */}
-      <div className="max-w-2xl mx-auto px-4 -mt-4">
-        {/* Appearance Settings */}
-        <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-lg p-6 mb-6">
-          <h2 className="text-lg font-semibold text-gray-800 dark:text-white mb-4">
-            Appearance
-          </h2>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              {theme === 'dark' ? (
-                <Moon className="w-5 h-5 text-purple-500" />
-              ) : (
-                <Sun className="w-5 h-5 text-yellow-500" />
-              )}
-              <div>
-                <p className="font-medium text-gray-800 dark:text-white">Dark Mode</p>
-                <p className="text-sm text-gray-500 dark:text-gray-400">
-                  {theme === 'dark' ? 'Enabled' : 'Disabled'}
-                </p>
-              </div>
-            </div>
-            <button
-              onClick={toggleTheme}
-              className={`relative inline-flex h-8 w-14 items-center rounded-full transition-colors ${
-                theme === 'dark' ? 'bg-purple-600' : 'bg-gray-300'
-              }`}
-            >
-              <span
-                className={`inline-block h-6 w-6 transform rounded-full bg-white transition-transform ${
-                  theme === 'dark' ? 'translate-x-7' : 'translate-x-1'
-                }`}
-              />
-            </button>
-          </div>
-        </div>
-
+      <div className="max-w-2xl mx-auto px-4 mt-6 space-y-4">
         {/* Financial Accounts */}
-        <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-lg p-6">
-          <h2 className="text-lg font-semibold text-gray-800 dark:text-white mb-6">
+        <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-6">
+          <h2 className="text-base font-semibold text-white mb-6">
             Financial Accounts
           </h2>
 
           <div className="space-y-4">
-            {/* Bank Balance */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Bank Balance (₹)
-              </label>
-              <div className="relative">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-lg font-semibold text-gray-400">₹</span>
-                <input
-                  type="number"
-                  step="0.01"
-                  value={formData.bankBalance}
-                  onChange={(e) => handleChange('bankBalance', e.target.value)}
-                  className="w-full pl-12 pr-4 py-3 border-2 border-gray-300 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-slate-700 dark:text-white"
-                />
-              </div>
-            </div>
-
-            {/* Stocks Value */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Stocks Value (₹)
-              </label>
-              <div className="relative">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-lg font-semibold text-gray-400">₹</span>
-                <input
-                  type="number"
-                  step="0.01"
-                  value={formData.stocksValue}
-                  onChange={(e) => handleChange('stocksValue', e.target.value)}
-                  className="w-full pl-12 pr-4 py-3 border-2 border-gray-300 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-slate-700 dark:text-white"
-                />
-              </div>
-            </div>
-
-            {/* Crypto Value */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Crypto Value (₹)
-              </label>
-              <div className="relative">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-lg font-semibold text-gray-400">₹</span>
-                <input
-                  type="number"
-                  step="0.01"
-                  value={formData.cryptoValue}
-                  onChange={(e) => handleChange('cryptoValue', e.target.value)}
-                  className="w-full pl-12 pr-4 py-3 border-2 border-gray-300 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-slate-700 dark:text-white"
-                />
-              </div>
-            </div>
-
-            {/* Credit Card Due */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Credit Card Due (₹)
-              </label>
-              <div className="relative">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-lg font-semibold text-gray-400">₹</span>
-                <input
-                  type="number"
-                  step="0.01"
-                  value={formData.creditCardDue}
-                  onChange={(e) => handleChange('creditCardDue', e.target.value)}
-                  className="w-full pl-12 pr-4 py-3 border-2 border-gray-300 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-slate-700 dark:text-white"
-                />
-              </div>
-            </div>
-
-            {/* Monthly Salary */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Monthly Salary (₹)
-              </label>
-              <div className="relative">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-lg font-semibold text-gray-400">₹</span>
-                <input
-                  type="number"
-                  step="0.01"
-                  value={formData.monthlySalary}
-                  onChange={(e) => handleChange('monthlySalary', e.target.value)}
-                  className="w-full pl-12 pr-4 py-3 border-2 border-gray-300 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-slate-700 dark:text-white"
-                />
-              </div>
-            </div>
+            <InputField label="Bank Balance" field="bankBalance" />
+            <InputField label="Stocks Value" field="stocksValue" />
+            <InputField label="Crypto Value" field="cryptoValue" />
+            <InputField label="Credit Card Due" field="creditCardDue" />
+            <InputField label="Monthly Salary" field="monthlySalary" />
           </div>
 
           {/* Save Button */}
           <button
             onClick={handleSave}
             disabled={isSaving}
-            className="w-full mt-6 py-4 bg-blue-500 hover:bg-blue-600 disabled:bg-gray-400 text-white font-semibold rounded-xl transition-colors flex items-center justify-center gap-2"
+            className="w-full mt-6 py-3 bg-emerald-600 hover:bg-emerald-700 disabled:bg-zinc-700 text-white font-medium rounded-lg transition-colors flex items-center justify-center gap-2"
           >
-            <Save className="w-5 h-5" />
+            <Save className="w-4 h-4" />
             {isSaving ? 'Saving...' : 'Save Changes'}
           </button>
         </div>
 
-        {/* Info Card */}
-        <div className="bg-blue-50 dark:bg-blue-900/20 rounded-2xl p-6 mt-6">
-          <h3 className="font-semibold text-blue-900 dark:text-blue-300 mb-2">
-            💡 Pro Tip
-          </h3>
-          <p className="text-sm text-blue-800 dark:text-blue-400">
-            Update these values whenever you receive your salary, pay bills, or make investment changes.
-            Your net worth will automatically update based on your daily expense logs.
-          </p>
-        </div>
-
         {/* Account Section */}
-        <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-lg p-6 mt-6">
-          <h2 className="text-lg font-semibold text-gray-800 dark:text-white mb-4">
+        <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-6">
+          <h2 className="text-base font-semibold text-white mb-4">
             Account
           </h2>
           <div className="space-y-4">
-            <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-slate-700 rounded-xl">
-              <div>
-                <p className="text-sm text-gray-500 dark:text-gray-400">Logged in as</p>
-                <p className="font-medium text-gray-800 dark:text-white">{user?.email}</p>
-              </div>
+            <div className="p-4 bg-black border border-zinc-800 rounded-lg">
+              <p className="text-xs text-zinc-500">Logged in as</p>
+              <p className="text-sm text-white mt-1">{user?.email}</p>
             </div>
             <button
               onClick={logout}
-              className="w-full py-4 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-xl transition-colors flex items-center justify-center gap-2"
+              className="w-full py-3 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg transition-colors flex items-center justify-center gap-2"
             >
-              <LogOut className="w-5 h-5" />
+              <LogOut className="w-4 h-4" />
               Logout
             </button>
           </div>
