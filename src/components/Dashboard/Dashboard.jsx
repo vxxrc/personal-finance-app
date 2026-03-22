@@ -22,24 +22,32 @@ const Dashboard = () => {
     try {
       await addExpense(expenseData);
 
-      // Update profile based on payment method and category
+      // Update profile based on transaction type, payment method and category
       if (profile) {
         const updates = {};
 
-        if (expenseData.paymentMethod === 'bank') {
-          updates.bankBalance = (profile.bankBalance || 0) - expenseData.amount;
-        } else if (expenseData.paymentMethod === 'credit') {
-          updates.creditCardDue = (profile.creditCardDue || 0) + expenseData.amount;
+        // Handle INCOME
+        if (expenseData.type === 'income') {
+          // Income always increases bank balance
+          updates.bankBalance = (profile.bankBalance || 0) + expenseData.amount;
         }
+        // Handle EXPENSE
+        else {
+          if (expenseData.paymentMethod === 'bank') {
+            updates.bankBalance = (profile.bankBalance || 0) - expenseData.amount;
+          } else if (expenseData.paymentMethod === 'credit') {
+            updates.creditCardDue = (profile.creditCardDue || 0) + expenseData.amount;
+          }
 
-        // Handle investments separately
-        if (expenseData.category === 'Investments') {
-          updates.bankBalance = (profile.bankBalance || 0) - expenseData.amount;
+          // Handle investments separately
+          if (expenseData.category === 'Investments') {
+            updates.bankBalance = (profile.bankBalance || 0) - expenseData.amount;
 
-          if (expenseData.subCategory === 'Stocks') {
-            updates.stocksValue = (profile.stocksValue || 0) + expenseData.amount;
-          } else if (expenseData.subCategory === 'Crypto') {
-            updates.cryptoValue = (profile.cryptoValue || 0) + expenseData.amount;
+            if (expenseData.subCategory === 'Stocks') {
+              updates.stocksValue = (profile.stocksValue || 0) + expenseData.amount;
+            } else if (expenseData.subCategory === 'Crypto') {
+              updates.cryptoValue = (profile.cryptoValue || 0) + expenseData.amount;
+            }
           }
         }
 
@@ -50,13 +58,13 @@ const Dashboard = () => {
 
       setIsExpenseFormOpen(false);
     } catch (error) {
-      console.error('Error adding expense:', error);
-      alert('Failed to add expense. Please try again.');
+      console.error('Error adding transaction:', error);
+      alert('Failed to add transaction. Please try again.');
     }
   };
 
   const handleDeleteExpense = async (expenseId) => {
-    if (!confirm('Delete this expense?')) return;
+    if (!confirm('Delete this transaction?')) return;
 
     try {
       const expense = expenses.find(exp => exp.id === expenseId);
@@ -67,20 +75,28 @@ const Dashboard = () => {
       // Reverse the profile updates
       const updates = {};
 
-      if (expense.paymentMethod === 'bank') {
-        updates.bankBalance = (profile.bankBalance || 0) + expense.amount;
-      } else if (expense.paymentMethod === 'credit') {
-        updates.creditCardDue = (profile.creditCardDue || 0) - expense.amount;
+      // Handle INCOME deletion
+      if (expense.type === 'income') {
+        // Deleting income decreases bank balance
+        updates.bankBalance = (profile.bankBalance || 0) - expense.amount;
       }
+      // Handle EXPENSE deletion
+      else {
+        if (expense.paymentMethod === 'bank') {
+          updates.bankBalance = (profile.bankBalance || 0) + expense.amount;
+        } else if (expense.paymentMethod === 'credit') {
+          updates.creditCardDue = (profile.creditCardDue || 0) - expense.amount;
+        }
 
-      // Reverse investment updates
-      if (expense.category === 'Investments') {
-        updates.bankBalance = (profile.bankBalance || 0) + expense.amount;
+        // Reverse investment updates
+        if (expense.category === 'Investments') {
+          updates.bankBalance = (profile.bankBalance || 0) + expense.amount;
 
-        if (expense.subCategory === 'Stocks') {
-          updates.stocksValue = (profile.stocksValue || 0) - expense.amount;
-        } else if (expense.subCategory === 'Crypto') {
-          updates.cryptoValue = (profile.cryptoValue || 0) - expense.amount;
+          if (expense.subCategory === 'Stocks') {
+            updates.stocksValue = (profile.stocksValue || 0) - expense.amount;
+          } else if (expense.subCategory === 'Crypto') {
+            updates.cryptoValue = (profile.cryptoValue || 0) - expense.amount;
+          }
         }
       }
 
@@ -88,8 +104,8 @@ const Dashboard = () => {
         await updateProfile(updates);
       }
     } catch (error) {
-      console.error('Error deleting expense:', error);
-      alert('Failed to delete expense. Please try again.');
+      console.error('Error deleting transaction:', error);
+      alert('Failed to delete transaction. Please try again.');
     }
   };
 
