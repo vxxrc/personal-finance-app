@@ -12,56 +12,112 @@ import { calculateNetWorth } from '../../services/calculations';
 
 const Dashboard = () => {
   const [isExpenseFormOpen, setIsExpenseFormOpen] = useState(false);
+  const [editingExpense, setEditingExpense] = useState(null);
 
   const { profile, updateProfile } = useProfile();
-  const { expenses, addExpense, deleteExpense } = useExpenses();
+  const { expenses, addExpense, updateExpense, deleteExpense } = useExpenses();
   const { goals } = useGoals();
 
   const netWorth = calculateNetWorth(profile);
 
   const handleAddExpense = async (expenseData) => {
     try {
-      await addExpense(expenseData);
+      if (editingExpense) {
+        // EDIT MODE: Calculate difference and update
+        const oldExpense = editingExpense;
 
-      // Update profile based on transaction type, payment method and category
-      if (profile) {
-        const updates = {};
+        // First, reverse the old transaction's effect
+        await reverseTransactionEffect(oldExpense);
 
-        // Handle INCOME
-        if (expenseData.type === 'income') {
-          // Income always increases bank balance
-          updates.bankBalance = (profile.bankBalance || 0) + expenseData.amount;
-        }
-        // Handle EXPENSE
-        else {
-          if (expenseData.paymentMethod === 'bank') {
-            updates.bankBalance = (profile.bankBalance || 0) - expenseData.amount;
-          } else if (expenseData.paymentMethod === 'credit') {
-            updates.creditCardDue = (profile.creditCardDue || 0) + expenseData.amount;
-          }
+        // Then apply the new transaction
+        await updateExpense(editingExpense.id, expenseData);
+        await applyTransactionEffect(expenseData);
 
-          // Handle investments separately
-          if (expenseData.category === 'Investments') {
-            updates.bankBalance = (profile.bankBalance || 0) - expenseData.amount;
-
-            if (expenseData.subCategory === 'Stocks') {
-              updates.stocksValue = (profile.stocksValue || 0) + expenseData.amount;
-            } else if (expenseData.subCategory === 'Crypto') {
-              updates.cryptoValue = (profile.cryptoValue || 0) + expenseData.amount;
-            }
-          }
-        }
-
-        if (Object.keys(updates).length > 0) {
-          await updateProfile(updates);
-        }
+        setEditingExpense(null);
+      } else {
+        // ADD MODE: Add new expense
+        await addExpense(expenseData);
+        await applyTransactionEffect(expenseData);
       }
 
       setIsExpenseFormOpen(false);
     } catch (error) {
-      console.error('Error adding transaction:', error);
-      alert('Failed to add transaction. Please try again.');
+      console.error('Error adding/updating transaction:', error);
+      alert('Failed to save transaction. Please try again.');
     }
+  };
+
+  const applyTransactionEffect = async (expenseData) => {
+    if (!profile) return;
+
+    const updates = {};
+
+    // Handle INCOME
+    if (expenseData.type === 'income') {
+      updates.bankBalance = (profile.bankBalance || 0) + expenseData.amount;
+    }
+    // Handle EXPENSE
+    else {
+      if (expenseData.paymentMethod === 'bank') {
+        updates.bankBalance = (profile.bankBalance || 0) - expenseData.amount;
+      } else if (expenseData.paymentMethod === 'credit') {
+        updates.creditCardDue = (profile.creditCardDue || 0) + expenseData.amount;
+      }
+
+      // Handle investments separately
+      if (expenseData.category === 'Investments') {
+        updates.bankBalance = (profile.bankBalance || 0) - expenseData.amount;
+
+        if (expenseData.subCategory === 'Stocks') {
+          updates.stocksValue = (profile.stocksValue || 0) + expenseData.amount;
+        } else if (expenseData.subCategory === 'Crypto') {
+          updates.cryptoValue = (profile.cryptoValue || 0) + expenseData.amount;
+        }
+      }
+    }
+
+    if (Object.keys(updates).length > 0) {
+      await updateProfile(updates);
+    }
+  };
+
+  const reverseTransactionEffect = async (expense) => {
+    if (!profile) return;
+
+    const updates = {};
+
+    // Handle INCOME deletion
+    if (expense.type === 'income') {
+      updates.bankBalance = (profile.bankBalance || 0) - expense.amount;
+    }
+    // Handle EXPENSE deletion
+    else {
+      if (expense.paymentMethod === 'bank') {
+        updates.bankBalance = (profile.bankBalance || 0) + expense.amount;
+      } else if (expense.paymentMethod === 'credit') {
+        updates.creditCardDue = (profile.creditCardDue || 0) - expense.amount;
+      }
+
+      // Reverse investment updates
+      if (expense.category === 'Investments') {
+        updates.bankBalance = (profile.bankBalance || 0) + expense.amount;
+
+        if (expense.subCategory === 'Stocks') {
+          updates.stocksValue = (profile.stocksValue || 0) - expense.amount;
+        } else if (expense.subCategory === 'Crypto') {
+          updates.cryptoValue = (profile.cryptoValue || 0) - expense.amount;
+        }
+      }
+    }
+
+    if (Object.keys(updates).length > 0) {
+      await updateProfile(updates);
+    }
+  };
+
+  const handleEditExpense = (expense) => {
+    setEditingExpense(expense);
+    setIsExpenseFormOpen(true);
   };
 
   const handleDeleteExpense = async (expenseId) => {
@@ -72,42 +128,16 @@ const Dashboard = () => {
       if (!expense || !profile) return;
 
       await deleteExpense(expenseId);
-
-      // Reverse the profile updates
-      const updates = {};
-
-      // Handle INCOME deletion
-      if (expense.type === 'income') {
-        // Deleting income decreases bank balance
-        updates.bankBalance = (profile.bankBalance || 0) - expense.amount;
-      }
-      // Handle EXPENSE deletion
-      else {
-        if (expense.paymentMethod === 'bank') {
-          updates.bankBalance = (profile.bankBalance || 0) + expense.amount;
-        } else if (expense.paymentMethod === 'credit') {
-          updates.creditCardDue = (profile.creditCardDue || 0) - expense.amount;
-        }
-
-        // Reverse investment updates
-        if (expense.category === 'Investments') {
-          updates.bankBalance = (profile.bankBalance || 0) + expense.amount;
-
-          if (expense.subCategory === 'Stocks') {
-            updates.stocksValue = (profile.stocksValue || 0) - expense.amount;
-          } else if (expense.subCategory === 'Crypto') {
-            updates.cryptoValue = (profile.cryptoValue || 0) - expense.amount;
-          }
-        }
-      }
-
-      if (Object.keys(updates).length > 0) {
-        await updateProfile(updates);
-      }
+      await reverseTransactionEffect(expense);
     } catch (error) {
       console.error('Error deleting transaction:', error);
       alert('Failed to delete transaction. Please try again.');
     }
+  };
+
+  const handleCloseForm = () => {
+    setIsExpenseFormOpen(false);
+    setEditingExpense(null);
   };
 
   return (
@@ -125,12 +155,15 @@ const Dashboard = () => {
         <NetWorthCard profile={profile} />
         <MonthlyExpenses expenses={expenses} />
         <GoalTracker goals={goals} netWorth={netWorth} />
-        <ExpenseList expenses={expenses} onDelete={handleDeleteExpense} />
+        <ExpenseList expenses={expenses} onDelete={handleDeleteExpense} onEdit={handleEditExpense} />
       </div>
 
       {/* Floating Add Button */}
       <button
-        onClick={() => setIsExpenseFormOpen(true)}
+        onClick={() => {
+          setEditingExpense(null);
+          setIsExpenseFormOpen(true);
+        }}
         className="fixed bottom-20 right-6 w-14 h-14 bg-emerald-600 hover:bg-emerald-700 text-white rounded-full flex items-center justify-center transition-colors z-40"
       >
         <Plus className="w-6 h-6" />
@@ -139,8 +172,9 @@ const Dashboard = () => {
       {/* Expense Form Modal */}
       <ExpenseForm
         isOpen={isExpenseFormOpen}
-        onClose={() => setIsExpenseFormOpen(false)}
+        onClose={handleCloseForm}
         onSubmit={handleAddExpense}
+        editingExpense={editingExpense}
       />
     </div>
   );

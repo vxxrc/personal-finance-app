@@ -1,4 +1,4 @@
-import { Trash2, ShoppingBag, Coffee, Car, Home, Zap, TrendingUp, Bitcoin, DollarSign, ArrowUpCircle, ArrowDownCircle } from 'lucide-react';
+import { Trash2, Edit2, ShoppingBag, Coffee, Car, Home, Zap, TrendingUp, Bitcoin, DollarSign, ArrowUpCircle, ArrowDownCircle } from 'lucide-react';
 import { formatCurrency } from '../../services/calculations';
 import { format, isToday, isYesterday, isThisWeek } from 'date-fns';
 
@@ -14,7 +14,7 @@ const CATEGORY_ICONS = {
   Income: DollarSign,
 };
 
-const ExpenseList = ({ expenses, onDelete }) => {
+const ExpenseList = ({ expenses, onDelete, onEdit }) => {
   // Sort transactions by date (newest first) and take last 10
   const recentTransactions = [...expenses]
     .sort((a, b) => new Date(b.date) - new Date(a.date))
@@ -113,6 +113,12 @@ const ExpenseList = ({ expenses, onDelete }) => {
                 <p className={`text-sm font-semibold ${isIncome ? 'text-emerald-500' : 'text-red-500'}`}>
                   {isIncome ? '+' : '-'}{formatCurrency(transaction.amount)}
                 </p>
+                <button
+                  onClick={() => onEdit(transaction)}
+                  className="p-1.5 text-zinc-500 hover:text-emerald-500 hover:bg-emerald-900/20 rounded-lg transition-colors"
+                >
+                  <Edit2 className="w-4 h-4" />
+                </button>
                 <button
                   onClick={() => onDelete(transaction.id)}
                   className="p-1.5 text-zinc-500 hover:text-red-500 hover:bg-red-900/20 rounded-lg transition-colors"

@@ -8,7 +8,7 @@ const CATEGORIES = {
   'Investments': ['Stocks', 'Crypto']
 };
 
-const ExpenseForm = ({ isOpen, onClose, onSubmit }) => {
+const ExpenseForm = ({ isOpen, onClose, onSubmit, editingExpense = null }) => {
   const [amount, setAmount] = useState('');
   const [type, setType] = useState('expense'); // 'income' or 'expense'
   const [category, setCategory] = useState('');
@@ -26,6 +26,27 @@ const ExpenseForm = ({ isOpen, onClose, onSubmit }) => {
       amountInputRef.current.focus();
     }
   }, [isOpen]);
+
+  // Populate form when editing
+  useEffect(() => {
+    if (editingExpense) {
+      setAmount(editingExpense.amount.toString());
+      setType(editingExpense.type || 'expense');
+      setCategory(editingExpense.category || '');
+      setSubCategory(editingExpense.subCategory || '');
+      setNote(editingExpense.note || '');
+      setPaymentMethod(editingExpense.paymentMethod || 'bank');
+    } else {
+      // Reset form when not editing
+      setAmount('');
+      setType('expense');
+      setCategory('');
+      setSubCategory('');
+      setNote('');
+      setPaymentMethod('bank');
+      setShowCategorySelect(false);
+    }
+  }, [editingExpense, isOpen]);
 
   // Initialize speech recognition
   useEffect(() => {
@@ -127,7 +148,7 @@ const ExpenseForm = ({ isOpen, onClose, onSubmit }) => {
       <div className="bg-zinc-900 w-full max-w-md rounded-2xl shadow-2xl border border-zinc-800 max-h-[85vh] overflow-y-auto">
         {/* Header */}
         <div className="flex justify-between items-center p-6 border-b border-zinc-700 sticky top-0 bg-zinc-900 z-10">
-          <h2 className="text-xl font-semibold text-white">Add Transaction</h2>
+          <h2 className="text-xl font-semibold text-white">{editingExpense ? 'Edit Transaction' : 'Add Transaction'}</h2>
           <button
             onClick={onClose}
             className="p-2 hover:bg-zinc-800 rounded-full transition-colors"
@@ -309,7 +330,10 @@ const ExpenseForm = ({ isOpen, onClose, onSubmit }) => {
                   : 'bg-red-600 hover:bg-red-700 text-white'
               }`}
             >
-              {type === 'income' ? 'Add Income' : 'Add Expense'}
+              {editingExpense
+                ? (type === 'income' ? 'Update Income' : 'Update Expense')
+                : (type === 'income' ? 'Add Income' : 'Add Expense')
+              }
             </button>
           </div>
         </form>

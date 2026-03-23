@@ -57,6 +57,22 @@ export const useExpenses = (limitCount = 100) => {
     }
   };
 
+  const updateExpense = async (expenseId, updates) => {
+    if (!auth.currentUser) return;
+
+    try {
+      const docRef = doc(db, 'expenses', expenseId);
+      await updateDoc(docRef, updates);
+      setExpenses(prev => prev.map(exp =>
+        exp.id === expenseId ? { ...exp, ...updates } : exp
+      ));
+    } catch (err) {
+      setError(err.message);
+      console.error('Error updating expense:', err);
+      throw err;
+    }
+  };
+
   const deleteExpense = async (expenseId) => {
     try {
       await deleteDoc(doc(db, 'expenses', expenseId));
@@ -68,5 +84,5 @@ export const useExpenses = (limitCount = 100) => {
     }
   };
 
-  return { expenses, loading, error, addExpense, deleteExpense, refreshExpenses: loadExpenses };
+  return { expenses, loading, error, addExpense, updateExpense, deleteExpense, refreshExpenses: loadExpenses };
 };
