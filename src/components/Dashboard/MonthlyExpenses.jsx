@@ -1,17 +1,18 @@
 import { formatCurrency } from '../../services/calculations';
-import { startOfMonth, endOfMonth, isWithinInterval } from 'date-fns';
+import { format } from 'date-fns';
 
 const MonthlyExpenses = ({ expenses }) => {
-  // Filter expenses for current month (exclude income)
-  const currentMonthStart = startOfMonth(new Date());
-  const currentMonthEnd = endOfMonth(new Date());
+  // Get current month and year
+  const now = new Date();
+  const currentMonth = now.getMonth();
+  const currentYear = now.getFullYear();
 
+  // Filter expenses for current month (exclude income)
   const monthlyExpenses = expenses.filter(exp => {
+    if (exp.type === 'income') return false;
+
     const expDate = new Date(exp.date);
-    return exp.type !== 'income' && isWithinInterval(expDate, {
-      start: currentMonthStart,
-      end: currentMonthEnd
-    });
+    return expDate.getMonth() === currentMonth && expDate.getFullYear() === currentYear;
   });
 
   // Calculate total
