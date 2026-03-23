@@ -137,7 +137,7 @@ const ExpenseForm = ({ isOpen, onClose, onSubmit }) => {
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+        <form onSubmit={handleSubmit} className="p-6 space-y-3.5">
           {/* Income/Expense Toggle */}
           <div>
             <label className="block text-sm font-medium text-zinc-300 mb-2">
@@ -151,7 +151,7 @@ const ExpenseForm = ({ isOpen, onClose, onSubmit }) => {
                   setCategory('');
                   setSubCategory('');
                 }}
-                className={`flex-1 py-3 rounded-lg font-medium transition-colors ${
+                className={`flex-1 py-2 rounded-lg text-sm font-medium transition-colors ${
                   type === 'expense'
                     ? 'bg-red-600 text-white'
                     : 'bg-zinc-800 text-zinc-300 hover:bg-zinc-700'
@@ -166,7 +166,7 @@ const ExpenseForm = ({ isOpen, onClose, onSubmit }) => {
                   setCategory('');
                   setSubCategory('');
                 }}
-                className={`flex-1 py-3 rounded-lg font-medium transition-colors ${
+                className={`flex-1 py-2 rounded-lg text-sm font-medium transition-colors ${
                   type === 'income'
                     ? 'bg-emerald-600 text-white'
                     : 'bg-zinc-800 text-zinc-300 hover:bg-zinc-700'
@@ -182,14 +182,14 @@ const ExpenseForm = ({ isOpen, onClose, onSubmit }) => {
               Amount (₹)
             </label>
             <div className="relative">
-              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-2xl font-semibold text-zinc-500">₹</span>
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-lg font-semibold text-zinc-500">₹</span>
               <input
                 ref={amountInputRef}
                 type="number"
                 step="0.01"
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
-                className="w-full pl-12 pr-4 py-4 text-2xl font-semibold border-2 border-zinc-700 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-black text-white"
+                className="w-full pl-10 pr-4 py-2.5 text-lg font-semibold border border-zinc-700 rounded-lg focus:outline-none focus:border-emerald-600 bg-black text-white"
                 placeholder="0.00"
               />
             </div>
@@ -205,7 +205,7 @@ const ExpenseForm = ({ isOpen, onClose, onSubmit }) => {
                 <button
                   type="button"
                   onClick={() => setShowCategorySelect(true)}
-                  className="w-full px-4 py-3 text-left border border-zinc-700 rounded-lg focus:outline-none focus:border-emerald-600 bg-black text-white"
+                  className="w-full px-3 py-2 text-sm text-left border border-zinc-700 rounded-lg focus:outline-none focus:border-emerald-600 bg-black text-white"
                 >
                   {category && subCategory ? `${category} > ${subCategory}` : 'Select category...'}
                 </button>
@@ -213,10 +213,10 @@ const ExpenseForm = ({ isOpen, onClose, onSubmit }) => {
                 <div className="border border-zinc-700 rounded-lg overflow-hidden">
                   {Object.entries(CATEGORIES).map(([mainCat, subCats]) => (
                     <div key={mainCat}>
-                      <div className="bg-zinc-800 px-4 py-2 text-sm font-medium text-zinc-300">
+                      <div className="bg-zinc-800 px-3 py-1.5 text-xs font-medium text-zinc-400">
                         {mainCat}
                       </div>
-                      <div className="grid grid-cols-2 gap-2 p-2 bg-black">
+                      <div className="grid grid-cols-2 gap-1.5 p-2 bg-black">
                         {subCats.map((subCat) => (
                           <button
                             key={subCat}
@@ -226,7 +226,7 @@ const ExpenseForm = ({ isOpen, onClose, onSubmit }) => {
                               setSubCategory(subCat);
                               setShowCategorySelect(false);
                             }}
-                            className={`px-3 py-2 rounded-lg text-sm transition-colors ${
+                            className={`px-3 py-1.5 rounded-lg text-sm transition-colors ${
                               category === mainCat && subCategory === subCat
                                 ? 'bg-emerald-600 text-white'
                                 : 'bg-zinc-800 text-zinc-300 hover:bg-zinc-700'
@@ -252,7 +252,7 @@ const ExpenseForm = ({ isOpen, onClose, onSubmit }) => {
               <button
                 type="button"
                 onClick={() => setPaymentMethod('bank')}
-                className={`flex-1 py-3 rounded-lg font-medium transition-colors ${
+                className={`flex-1 py-2 rounded-lg text-sm font-medium transition-colors ${
                   paymentMethod === 'bank'
                     ? 'bg-emerald-600 text-white'
                     : 'bg-zinc-800 text-zinc-300 hover:bg-zinc-700'
@@ -263,7 +263,7 @@ const ExpenseForm = ({ isOpen, onClose, onSubmit }) => {
               <button
                 type="button"
                 onClick={() => setPaymentMethod('credit')}
-                className={`flex-1 py-3 rounded-lg font-medium transition-colors ${
+                className={`flex-1 py-2 rounded-lg text-sm font-medium transition-colors ${
                   paymentMethod === 'credit'
                     ? 'bg-emerald-600 text-white'
                     : 'bg-zinc-800 text-zinc-300 hover:bg-zinc-700'
@@ -283,27 +283,27 @@ const ExpenseForm = ({ isOpen, onClose, onSubmit }) => {
               type="text"
               value={note}
               onChange={(e) => setNote(e.target.value)}
-              className="w-full px-4 py-3 border border-zinc-700 rounded-lg focus:outline-none focus:border-emerald-600 bg-black text-white"
+              className="w-full px-3 py-2 text-sm border border-zinc-700 rounded-lg focus:outline-none focus:border-emerald-600 bg-black text-white"
               placeholder={type === 'income' ? 'e.g., Monthly Salary' : 'Add a note...'}
             />
           </div>
 
           {/* Action Buttons */}
-          <div className="flex gap-3 pt-2">
+          <div className="flex gap-2 pt-2">
             <button
               type="button"
               onClick={toggleVoiceInput}
-              className={`flex-shrink-0 p-4 rounded-lg transition-colors ${
+              className={`flex-shrink-0 p-2.5 rounded-lg transition-colors ${
                 isListening
                   ? 'bg-red-600 text-white'
                   : 'bg-zinc-800 text-zinc-300 hover:bg-zinc-700'
               }`}
             >
-              {isListening ? <MicOff className="w-6 h-6" /> : <Mic className="w-6 h-6" />}
+              {isListening ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
             </button>
             <button
               type="submit"
-              className={`flex-1 py-4 font-semibold rounded-lg transition-colors ${
+              className={`flex-1 py-2.5 text-sm font-semibold rounded-lg transition-colors ${
                 type === 'income'
                   ? 'bg-emerald-600 hover:bg-emerald-700 text-white'
                   : 'bg-red-600 hover:bg-red-700 text-white'
