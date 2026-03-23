@@ -14,8 +14,11 @@ function App() {
     return <Auth />;
   }
 
+  // Use basename only for production (GitHub Pages)
+  const basename = import.meta.env.MODE === 'production' ? '/personal-finance-app' : '';
+
   return (
-    <BrowserRouter basename="/personal-finance-app">
+    <BrowserRouter basename={basename}>
       <div className="min-h-screen bg-black">
         <Routes>
           <Route path="/" element={<Dashboard />} />
