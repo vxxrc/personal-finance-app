@@ -12,8 +12,8 @@ const Navigation = () => {
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-zinc-900 border-t border-zinc-800 z-50">
-      <div className="max-w-2xl mx-auto px-4">
+    <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-neutral-80 z-50 shadow-overlay pb-[env(safe-area-inset-bottom)]">
+      <div className="max-w-2xl mx-auto px-2">
         <div className="flex justify-around items-center h-16">
           {navItems.map(({ path, icon: Icon, label }) => {
             const isActive = location.pathname === path;
@@ -21,14 +21,14 @@ const Navigation = () => {
               <Link
                 key={path}
                 to={path}
-                className={`flex flex-col items-center justify-center flex-1 h-full transition-colors ${
+                className={`flex flex-col items-center justify-center flex-1 h-full transition-all ${
                   isActive
-                    ? 'text-emerald-600'
-                    : 'text-zinc-400 hover:text-zinc-300'
+                    ? 'text-brand-green'
+                    : 'text-neutral-50 hover:text-neutral-20'
                 }`}
               >
-                <Icon className={`w-6 h-6 mb-1 ${isActive ? 'scale-110' : ''}`} />
-                <span className="text-xs font-medium">{label}</span>
+                <Icon className={`w-5 h-5 mb-1 transition-transform ${isActive ? 'scale-110' : ''}`} />
+                <span className={`text-xs transition-all ${isActive ? 'font-semibold' : 'font-medium'}`}>{label}</span>
               </Link>
             );
           })}

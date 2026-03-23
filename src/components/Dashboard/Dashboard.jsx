@@ -149,17 +149,17 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-black pb-24">
+    <div className="min-h-screen bg-neutral-90 pb-24">
       {/* Header */}
-      <div className="bg-zinc-900 border-b border-zinc-800 pt-[calc(1.5rem+env(safe-area-inset-top))] pb-6 px-6">
+      <div className="bg-white border-b border-neutral-80 pt-[calc(1.5rem+env(safe-area-inset-top))] pb-5 px-6 shadow-flat">
         <div className="max-w-2xl mx-auto">
-          <h1 className="text-xl font-semibold text-white">Finance</h1>
-          <p className="text-sm text-zinc-400 mt-1">Dashboard</p>
+          <h1 className="text-2xl font-semibold text-neutral-5 tracking-tight">Finance</h1>
+          <p className="text-sm text-neutral-50 mt-1">Your financial overview</p>
         </div>
       </div>
 
       {/* Content */}
-      <div className="max-w-2xl mx-auto px-4 mt-6">
+      <div className="max-w-2xl mx-auto px-4 mt-6 space-y-4">
         <NetWorthCard profile={profile} />
         <MonthlyExpenses expenses={expenses} />
         <GoalTracker goals={goals} netWorth={netWorth} />
@@ -172,7 +172,7 @@ const Dashboard = () => {
           setEditingExpense(null);
           setIsExpenseFormOpen(true);
         }}
-        className="fixed bottom-20 right-6 w-14 h-14 bg-emerald-600 hover:bg-emerald-700 text-white rounded-full flex items-center justify-center transition-colors z-40"
+        className="fixed bottom-20 right-6 w-14 h-14 bg-brand-green hover:bg-green-600 text-white rounded-full flex items-center justify-center transition-all shadow-raised hover:shadow-overlay z-40"
       >
         <Plus className="w-6 h-6" />
       </button>
