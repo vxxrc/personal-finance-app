@@ -14,7 +14,7 @@ const Dashboard = () => {
   const [isExpenseFormOpen, setIsExpenseFormOpen] = useState(false);
   const [editingExpense, setEditingExpense] = useState(null);
 
-  const { profile, updateProfile } = useProfile();
+  const { profile, updateProfile, refreshProfile } = useProfile();
   const { expenses, addExpense, updateExpense, deleteExpense } = useExpenses();
   const { goals } = useGoals();
 
@@ -58,13 +58,7 @@ const Dashboard = () => {
     }
     // Handle EXPENSE
     else {
-      if (expenseData.paymentMethod === 'bank') {
-        updates.bankBalance = (profile.bankBalance || 0) - expenseData.amount;
-      } else if (expenseData.paymentMethod === 'credit') {
-        updates.creditCardDue = (profile.creditCardDue || 0) + expenseData.amount;
-      }
-
-      // Handle investments separately
+      // Handle investments separately (always from bank, goes to stocks/crypto)
       if (expenseData.category === 'Investments') {
         updates.bankBalance = (profile.bankBalance || 0) - expenseData.amount;
 
@@ -74,10 +68,20 @@ const Dashboard = () => {
           updates.cryptoValue = (profile.cryptoValue || 0) + expenseData.amount;
         }
       }
+      // Handle regular expenses
+      else {
+        if (expenseData.paymentMethod === 'bank') {
+          updates.bankBalance = (profile.bankBalance || 0) - expenseData.amount;
+        } else if (expenseData.paymentMethod === 'credit') {
+          updates.creditCardDue = (profile.creditCardDue || 0) + expenseData.amount;
+        }
+      }
     }
 
     if (Object.keys(updates).length > 0) {
       await updateProfile(updates);
+      // Refresh profile to get latest data from Firestore
+      await refreshProfile();
     }
   };
 
@@ -92,13 +96,7 @@ const Dashboard = () => {
     }
     // Handle EXPENSE deletion
     else {
-      if (expense.paymentMethod === 'bank') {
-        updates.bankBalance = (profile.bankBalance || 0) + expense.amount;
-      } else if (expense.paymentMethod === 'credit') {
-        updates.creditCardDue = (profile.creditCardDue || 0) - expense.amount;
-      }
-
-      // Reverse investment updates
+      // Reverse investment updates (add back to bank, remove from stocks/crypto)
       if (expense.category === 'Investments') {
         updates.bankBalance = (profile.bankBalance || 0) + expense.amount;
 
@@ -108,10 +106,20 @@ const Dashboard = () => {
           updates.cryptoValue = (profile.cryptoValue || 0) - expense.amount;
         }
       }
+      // Reverse regular expenses
+      else {
+        if (expense.paymentMethod === 'bank') {
+          updates.bankBalance = (profile.bankBalance || 0) + expense.amount;
+        } else if (expense.paymentMethod === 'credit') {
+          updates.creditCardDue = (profile.creditCardDue || 0) - expense.amount;
+        }
+      }
     }
 
     if (Object.keys(updates).length > 0) {
       await updateProfile(updates);
+      // Refresh profile to get latest data from Firestore
+      await refreshProfile();
     }
   };
 
