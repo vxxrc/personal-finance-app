@@ -54,26 +54,26 @@ const ExpenseList = ({ expenses, onDelete, onEdit }) => {
   };
 
   return (
-    <div className="bg-white rounded-card shadow-raised p-6">
-      <div className="mb-5">
-        <h2 className="text-lg font-semibold text-neutral-5 mb-4 tracking-tight">
+    <div className="bg-zinc-900 rounded-2xl shadow-lg p-6 mb-6 border border-zinc-800">
+      <div className="mb-4">
+        <h2 className="text-base font-semibold text-white mb-3">
           Recent Transactions
         </h2>
 
         {/* Today's Summary - only show if there are transactions today */}
         {todayTransactions.length > 0 && (
-          <div className="grid grid-cols-3 gap-3 mb-5 pb-5 border-b border-neutral-80">
-            <div className="bg-green-50 rounded-lg p-3 border border-green-100">
-              <p className="text-xs text-neutral-50 mb-1 font-medium">Today Income</p>
-              <p className="text-sm font-bold text-brand-green tracking-tight">+{formatCurrency(todayIncome)}</p>
+          <div className="grid grid-cols-3 gap-2 mb-4">
+            <div className="bg-black rounded-lg p-2.5 border border-zinc-800">
+              <p className="text-xs text-zinc-400 mb-0.5">Today Income</p>
+              <p className="text-sm font-semibold text-emerald-500">+{formatCurrency(todayIncome)}</p>
             </div>
-            <div className="bg-red-50 rounded-lg p-3 border border-red-100">
-              <p className="text-xs text-neutral-50 mb-1 font-medium">Today Expenses</p>
-              <p className="text-sm font-bold text-brand-red tracking-tight">-{formatCurrency(todayExpenses)}</p>
+            <div className="bg-black rounded-lg p-2.5 border border-zinc-800">
+              <p className="text-xs text-zinc-400 mb-0.5">Today Expenses</p>
+              <p className="text-sm font-semibold text-red-500">-{formatCurrency(todayExpenses)}</p>
             </div>
-            <div className="bg-neutral-90 rounded-lg p-3 border border-neutral-80">
-              <p className="text-xs text-neutral-50 mb-1 font-medium">Today Net</p>
-              <p className={`text-sm font-bold tracking-tight ${todayNet >= 0 ? 'text-brand-green' : 'text-brand-red'}`}>
+            <div className="bg-black rounded-lg p-2.5 border border-zinc-800">
+              <p className="text-xs text-zinc-400 mb-0.5">Today Net</p>
+              <p className={`text-sm font-semibold ${todayNet >= 0 ? 'text-emerald-500' : 'text-red-500'}`}>
                 {todayNet >= 0 ? '+' : ''}{formatCurrency(todayNet)}
               </p>
             </div>
@@ -89,39 +89,39 @@ const ExpenseList = ({ expenses, onDelete, onEdit }) => {
           return (
             <div
               key={transaction.id}
-              className="flex items-center justify-between bg-neutral-90 rounded-lg p-3 hover:bg-neutral-85 hover:shadow-flat transition-all border border-neutral-80"
+              className="flex items-center justify-between bg-black rounded-lg p-3 hover:bg-zinc-800 transition-colors border border-zinc-800"
             >
-              <div className="flex items-center gap-3 flex-1">
-                <div className={`p-2 rounded-lg ${isIncome ? 'bg-green-50 border border-green-100' : 'bg-red-50 border border-red-100'}`}>
-                  <Icon className={`w-4 h-4 ${isIncome ? 'text-brand-green' : 'text-brand-red'}`} />
+              <div className="flex items-center gap-2.5 flex-1">
+                <div className={`p-1.5 rounded-lg ${isIncome ? 'bg-emerald-900/30' : 'bg-red-900/30'}`}>
+                  <Icon className={`w-4 h-4 ${isIncome ? 'text-emerald-400' : 'text-red-400'}`} />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-neutral-5">
+                  <p className="text-sm font-medium text-white">
                     {transaction.subCategory}
                   </p>
                   {transaction.note && (
-                    <p className="text-xs text-neutral-40 truncate">
+                    <p className="text-xs text-zinc-400 truncate">
                       {transaction.note}
                     </p>
                   )}
-                  <p className="text-xs text-neutral-50 mt-0.5">
+                  <p className="text-xs text-zinc-500">
                     {getDateLabel(transaction.date)} • {format(new Date(transaction.date), 'h:mm a')}
                   </p>
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                <p className={`text-sm font-bold ${isIncome ? 'text-brand-green' : 'text-brand-red'}`}>
+                <p className={`text-sm font-semibold ${isIncome ? 'text-emerald-500' : 'text-red-500'}`}>
                   {isIncome ? '+' : '-'}{formatCurrency(transaction.amount)}
                 </p>
                 <button
                   onClick={() => onEdit(transaction)}
-                  className="p-2 text-neutral-50 hover:text-brand-blue hover:bg-blue-50 rounded-lg transition-colors"
+                  className="p-1.5 text-zinc-500 hover:text-emerald-500 hover:bg-emerald-900/20 rounded-lg transition-colors"
                 >
                   <Edit2 className="w-4 h-4" />
                 </button>
                 <button
                   onClick={() => onDelete(transaction.id)}
-                  className="p-2 text-neutral-50 hover:text-brand-red hover:bg-red-50 rounded-lg transition-colors"
+                  className="p-1.5 text-zinc-500 hover:text-red-500 hover:bg-red-900/20 rounded-lg transition-colors"
                 >
                   <Trash2 className="w-4 h-4" />
                 </button>
