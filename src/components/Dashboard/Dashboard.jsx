@@ -4,6 +4,7 @@ import NetWorthCard from '../NetWorthCard/NetWorthCard';
 import GoalTracker from '../GoalTracker/GoalTracker';
 import ExpenseForm from '../ExpenseForm/ExpenseForm';
 import ExpenseList from './ExpenseList';
+import MonthlyExpenses from './MonthlyExpenses';
 import { useProfile } from '../../hooks/useProfile';
 import { useExpenses } from '../../hooks/useExpenses';
 import { useGoals } from '../../hooks/useGoals';
@@ -122,6 +123,7 @@ const Dashboard = () => {
       {/* Content */}
       <div className="max-w-2xl mx-auto px-4 mt-6">
         <NetWorthCard profile={profile} />
+        <MonthlyExpenses expenses={expenses} />
         <GoalTracker goals={goals} netWorth={netWorth} />
         <ExpenseList expenses={expenses} onDelete={handleDeleteExpense} />
       </div>
