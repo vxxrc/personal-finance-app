@@ -8,15 +8,20 @@ export const useProfile = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((user) => {
-      if (user) {
-        loadProfile();
-      } else {
-        setLoading(false);
-      }
-    });
-
-    return () => unsubscribe();
+    // Use currentUser directly if already authenticated
+    if (auth.currentUser) {
+      loadProfile();
+    } else {
+      // Only set up listener if not already authenticated
+      const unsubscribe = auth.onAuthStateChanged((user) => {
+        if (user) {
+          loadProfile();
+        } else {
+          setLoading(false);
+        }
+      });
+      return () => unsubscribe();
+    }
   }, []);
 
   const loadProfile = async () => {

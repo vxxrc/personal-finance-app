@@ -8,15 +8,20 @@ export const useExpenses = (limitCount = 100) => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((user) => {
-      if (user) {
-        loadExpenses();
-      } else {
-        setLoading(false);
-      }
-    });
-
-    return () => unsubscribe();
+    // Use currentUser directly if already authenticated
+    if (auth.currentUser) {
+      loadExpenses();
+    } else {
+      // Only set up listener if not already authenticated
+      const unsubscribe = auth.onAuthStateChanged((user) => {
+        if (user) {
+          loadExpenses();
+        } else {
+          setLoading(false);
+        }
+      });
+      return () => unsubscribe();
+    }
   }, [limitCount]);
 
   const loadExpenses = async () => {

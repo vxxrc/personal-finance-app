@@ -8,15 +8,20 @@ export const useGoals = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((user) => {
-      if (user) {
-        loadGoals();
-      } else {
-        setLoading(false);
-      }
-    });
-
-    return () => unsubscribe();
+    // Use currentUser directly if already authenticated
+    if (auth.currentUser) {
+      loadGoals();
+    } else {
+      // Only set up listener if not already authenticated
+      const unsubscribe = auth.onAuthStateChanged((user) => {
+        if (user) {
+          loadGoals();
+        } else {
+          setLoading(false);
+        }
+      });
+      return () => unsubscribe();
+    }
   }, []);
 
   const loadGoals = async () => {
