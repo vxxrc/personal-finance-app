@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { collection, addDoc, query, orderBy, limit, getDocs, deleteDoc, doc, where } from 'firebase/firestore';
+import { collection, addDoc, query, orderBy, limit, getDocs, deleteDoc, doc, where, updateDoc } from 'firebase/firestore';
 import { auth, db } from '../services/firebase';
 
 export const useExpenses = (limitCount = 100) => {
@@ -8,9 +8,15 @@ export const useExpenses = (limitCount = 100) => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (auth.currentUser) {
-      loadExpenses();
-    }
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      if (user) {
+        loadExpenses();
+      } else {
+        setLoading(false);
+      }
+    });
+
+    return () => unsubscribe();
   }, [limitCount]);
 
   const loadExpenses = async () => {

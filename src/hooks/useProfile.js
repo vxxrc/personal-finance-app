@@ -8,9 +8,15 @@ export const useProfile = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (auth.currentUser) {
-      loadProfile();
-    }
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      if (user) {
+        loadProfile();
+      } else {
+        setLoading(false);
+      }
+    });
+
+    return () => unsubscribe();
   }, []);
 
   const loadProfile = async () => {

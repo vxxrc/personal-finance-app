@@ -8,9 +8,15 @@ export const useGoals = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (auth.currentUser) {
-      loadGoals();
-    }
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      if (user) {
+        loadGoals();
+      } else {
+        setLoading(false);
+      }
+    });
+
+    return () => unsubscribe();
   }, []);
 
   const loadGoals = async () => {
