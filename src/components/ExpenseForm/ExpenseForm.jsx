@@ -17,6 +17,7 @@ const ExpenseForm = ({ isOpen, onClose, onSubmit, editingExpense = null }) => {
   const [paymentMethod, setPaymentMethod] = useState('bank'); // 'bank' or 'credit'
   const [isListening, setIsListening] = useState(false);
   const [showCategorySelect, setShowCategorySelect] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const recognitionRef = useRef(null);
   const amountInputRef = useRef(null);
@@ -112,7 +113,7 @@ const ExpenseForm = ({ isOpen, onClose, onSubmit, editingExpense = null }) => {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     // For expenses, require category. For income, category is optional
@@ -121,24 +122,36 @@ const ExpenseForm = ({ isOpen, onClose, onSubmit, editingExpense = null }) => {
       return;
     }
 
-    onSubmit({
-      amount: parseFloat(amount),
-      type,
-      category: type === 'expense' ? category : 'Income',
-      subCategory: type === 'expense' ? subCategory : (note || 'Salary'),
-      note,
-      paymentMethod,
-      date: new Date().toISOString()
-    });
+    if (isSubmitting) return; // Prevent double submission
 
-    // Reset form
-    setAmount('');
-    setType('expense');
-    setCategory('');
-    setSubCategory('');
-    setNote('');
-    setPaymentMethod('bank');
-    setShowCategorySelect(false);
+    try {
+      setIsSubmitting(true);
+
+      // Wait for submission to complete before resetting form
+      await onSubmit({
+        amount: parseFloat(amount),
+        type,
+        category: type === 'expense' ? category : 'Income',
+        subCategory: type === 'expense' ? subCategory : (note || 'Salary'),
+        note,
+        paymentMethod,
+        date: new Date().toISOString()
+      });
+
+      // Only reset form after successful submission
+      setAmount('');
+      setType('expense');
+      setCategory('');
+      setSubCategory('');
+      setNote('');
+      setPaymentMethod('bank');
+      setShowCategorySelect(false);
+    } catch (error) {
+      console.error('Submission error:', error);
+      // Error alert is already handled in Dashboard's handleAddExpense
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   if (!isOpen) return null;
@@ -324,16 +337,18 @@ const ExpenseForm = ({ isOpen, onClose, onSubmit, editingExpense = null }) => {
             </button>
             <button
               type="submit"
+              disabled={isSubmitting}
               className={`flex-1 py-2.5 text-sm font-semibold rounded-lg transition-colors ${
                 type === 'income'
-                  ? 'bg-emerald-600 hover:bg-emerald-700 text-white'
-                  : 'bg-red-600 hover:bg-red-700 text-white'
+                  ? 'bg-emerald-600 hover:bg-emerald-700 disabled:bg-emerald-400 text-white'
+                  : 'bg-red-600 hover:bg-red-700 disabled:bg-red-400 text-white'
               }`}
             >
-              {editingExpense
-                ? (type === 'income' ? 'Update Income' : 'Update Expense')
-                : (type === 'income' ? 'Add Income' : 'Add Expense')
-              }
+              {isSubmitting ? 'Saving...' : (
+                editingExpense
+                  ? (type === 'income' ? 'Update Income' : 'Update Expense')
+                  : (type === 'income' ? 'Add Income' : 'Add Expense')
+              )}
             </button>
           </div>
         </form>
