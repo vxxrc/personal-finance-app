@@ -7,26 +7,11 @@ const MonthlyExpenses = ({ expenses }) => {
   const currentMonth = now.getMonth();
   const currentYear = now.getFullYear();
 
-  console.log('MonthlyExpenses Debug:', {
-    totalExpenses: expenses.length,
-    currentMonth,
-    currentYear,
-    sampleExpense: expenses[0],
-  });
-
   // Filter transactions for current month
   const monthlyTransactions = expenses.filter(exp => {
     const expDate = new Date(exp.date);
-    const isCurrentMonth = expDate.getMonth() === currentMonth && expDate.getFullYear() === currentYear;
-
-    if (isCurrentMonth) {
-      console.log('Found current month transaction:', exp);
-    }
-
-    return isCurrentMonth;
+    return expDate.getMonth() === currentMonth && expDate.getFullYear() === currentYear;
   });
-
-  console.log('Monthly transactions found:', monthlyTransactions.length);
 
   // Separate income and expenses
   // Note: old transactions may not have 'type' field, treat them as expenses
