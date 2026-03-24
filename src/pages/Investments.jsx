@@ -18,9 +18,9 @@ const Investments = () => {
   const cryptoPercentage = totalInvestments > 0 ? (profile.cryptoValue / totalInvestments) * 100 : 50;
 
   return (
-    <div className="min-h-screen bg-black pb-24">
-      {/* Header */}
-      <div className="bg-zinc-900 border-b border-zinc-800 pt-[calc(1.5rem+env(safe-area-inset-top))] pb-6 px-6">
+    <div className="min-h-screen bg-black pb-24 md:pb-0 md:pt-16">
+      {/* Header - Mobile only */}
+      <div className="md:hidden bg-zinc-900 border-b border-zinc-800 pt-[calc(1.5rem+env(safe-area-inset-top))] pb-6 px-6">
         <div className="max-w-2xl mx-auto">
           <h1 className="text-2xl font-bold text-white mb-1">Investments</h1>
           <p className="text-zinc-400">Track your portfolio</p>
@@ -28,22 +28,23 @@ const Investments = () => {
       </div>
 
       {/* Content */}
-      <div className="max-w-2xl mx-auto px-4 py-6">
-        {/* Total Portfolio Value */}
-        <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-6 mb-6">
-          <div className="text-center">
-            <div className="flex items-center justify-center gap-2 mb-2">
-              <PieChart className="w-6 h-6 text-emerald-600" />
-              <p className="text-sm text-zinc-400">Total Portfolio</p>
+      <div className="max-w-7xl mx-auto px-4 md:px-6 py-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+          {/* Total Portfolio Value */}
+          <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-6 md:col-span-2 lg:col-span-3">
+            <div className="text-center">
+              <div className="flex items-center justify-center gap-2 mb-2">
+                <PieChart className="w-6 h-6 text-emerald-600" />
+                <p className="text-sm text-zinc-400">Total Portfolio</p>
+              </div>
+              <h2 className="text-4xl font-bold text-white">
+                {formatCurrency(totalInvestments)}
+              </h2>
             </div>
-            <h2 className="text-4xl font-bold text-white">
-              {formatCurrency(totalInvestments)}
-            </h2>
           </div>
-        </div>
 
-        {/* Investment Breakdown */}
-        <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-6 mb-6">
+          {/* Investment Breakdown */}
+          <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-6 md:col-span-2">
           <h3 className="text-lg font-semibold text-white mb-4">
             Portfolio Breakdown
           </h3>
@@ -93,17 +94,18 @@ const Investments = () => {
           </div>
         </div>
 
-        {/* Info Card */}
-        <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-6">
-          <h3 className="font-semibold text-white mb-3">
-            How to track investments
-          </h3>
-          <ul className="text-sm text-zinc-400 space-y-2">
-            <li>• When you buy stocks/crypto, add it as an expense with category "Investments"</li>
-            <li>• This will deduct from your bank and add to your investment value</li>
-            <li>• Update total values in Settings when prices change</li>
-            <li>• Your net worth includes all investment values</li>
-          </ul>
+          {/* Info Card */}
+          <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-6 lg:col-span-1">
+            <h3 className="font-semibold text-white mb-3">
+              How to track investments
+            </h3>
+            <ul className="text-sm text-zinc-400 space-y-2">
+              <li>• When you buy stocks/crypto, add it as an expense with category "Investments"</li>
+              <li>• This will deduct from your bank and add to your investment value</li>
+              <li>• Update total values in Settings when prices change</li>
+              <li>• Your net worth includes all investment values</li>
+            </ul>
+          </div>
         </div>
       </div>
     </div>

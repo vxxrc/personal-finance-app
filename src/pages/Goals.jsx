@@ -98,9 +98,9 @@ const Goals = () => {
   };
 
   return (
-    <div className="min-h-screen bg-black pb-24">
-      {/* Header */}
-      <div className="bg-zinc-900 border-b border-zinc-800 pt-[calc(1.5rem+env(safe-area-inset-top))] pb-6 px-6">
+    <div className="min-h-screen bg-black pb-24 md:pb-0 md:pt-16">
+      {/* Header - Mobile only */}
+      <div className="md:hidden bg-zinc-900 border-b border-zinc-800 pt-[calc(1.5rem+env(safe-area-inset-top))] pb-6 px-6">
         <div className="max-w-2xl mx-auto">
           <h1 className="text-2xl font-bold text-white mb-1">Financial Goals</h1>
           <p className="text-zinc-400">Set and track your targets</p>
@@ -108,10 +108,10 @@ const Goals = () => {
       </div>
 
       {/* Content */}
-      <div className="max-w-2xl mx-auto px-4 py-6">
+      <div className="max-w-7xl mx-auto px-4 md:px-6 py-6">
         {/* Goals List */}
         {goals.length === 0 ? (
-          <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-8 text-center">
+          <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-8 text-center max-w-2xl mx-auto">
             <Target className="w-16 h-16 text-zinc-700 mx-auto mb-4" />
             <h3 className="text-lg font-semibold text-white mb-2">
               No goals yet
@@ -121,7 +121,7 @@ const Goals = () => {
             </p>
           </div>
         ) : (
-          <div className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
             {goals.map((goal) => {
               const currentAmount = goal.useNetWorth ? netWorth : goal.currentAmount;
               const progress = calculateGoalProgress(currentAmount, goal.targetAmount);
@@ -338,7 +338,7 @@ const Goals = () => {
       {!isFormOpen && (
         <button
           onClick={() => setIsFormOpen(true)}
-          className="fixed bottom-20 right-6 w-14 h-14 bg-emerald-600 hover:bg-emerald-700 text-white rounded-full shadow-lg flex items-center justify-center transition-colors"
+          className="fixed bottom-20 md:bottom-6 right-6 w-14 h-14 bg-emerald-600 hover:bg-emerald-700 text-white rounded-full shadow-lg flex items-center justify-center transition-colors z-40"
         >
           <Plus className="w-6 h-6" />
         </button>

@@ -138,9 +138,9 @@ const Settings = () => {
   }
 
   return (
-    <div className="min-h-screen bg-black pb-24">
-      {/* Header */}
-      <div className="bg-zinc-900 border-b border-zinc-800 pt-[calc(1.5rem+env(safe-area-inset-top))] pb-6 px-6">
+    <div className="min-h-screen bg-black pb-24 md:pb-0 md:pt-16">
+      {/* Header - Mobile only */}
+      <div className="md:hidden bg-zinc-900 border-b border-zinc-800 pt-[calc(1.5rem+env(safe-area-inset-top))] pb-6 px-6">
         <div className="max-w-2xl mx-auto">
           <h1 className="text-xl font-semibold text-white">Settings</h1>
           <p className="text-sm text-zinc-400 mt-1">Manage your account & view insights</p>
@@ -148,11 +148,11 @@ const Settings = () => {
       </div>
 
       {/* Tab Navigation */}
-      <div className="max-w-2xl mx-auto px-4 mt-6">
+      <div className="max-w-7xl mx-auto px-4 md:px-6 mt-6">
         <div className="flex gap-2 mb-6">
           <button
             onClick={() => setActiveTab('settings')}
-            className={`flex-1 py-3 text-sm font-medium rounded-lg transition-colors ${
+            className={`flex-1 md:flex-initial md:px-6 py-3 text-sm font-medium rounded-lg transition-colors ${
               activeTab === 'settings'
                 ? 'bg-emerald-600 text-white'
                 : 'bg-zinc-900 text-zinc-300 hover:bg-zinc-800 border border-zinc-800'
@@ -162,7 +162,7 @@ const Settings = () => {
           </button>
           <button
             onClick={() => setActiveTab('insights')}
-            className={`flex-1 py-3 text-sm font-medium rounded-lg transition-colors ${
+            className={`flex-1 md:flex-initial md:px-6 py-3 text-sm font-medium rounded-lg transition-colors ${
               activeTab === 'insights'
                 ? 'bg-emerald-600 text-white'
                 : 'bg-zinc-900 text-zinc-300 hover:bg-zinc-800 border border-zinc-800'
@@ -174,9 +174,9 @@ const Settings = () => {
       </div>
 
       {/* Content */}
-      <div className="max-w-2xl mx-auto px-4 space-y-4">
+      <div className="max-w-7xl mx-auto px-4 md:px-6 space-y-4">
         {activeTab === 'settings' && (
-          <>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
             {/* Financial Accounts */}
             <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-6">
               <h2 className="text-base font-semibold text-white mb-6">
@@ -246,7 +246,7 @@ const Settings = () => {
                 </button>
               </div>
             </div>
-          </>
+          </div>
         )}
 
         {activeTab === 'insights' && (

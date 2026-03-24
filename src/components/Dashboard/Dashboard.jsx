@@ -149,9 +149,9 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-black pb-24">
-      {/* Header */}
-      <div className="bg-zinc-900 border-b border-zinc-800 pt-[calc(1.5rem+env(safe-area-inset-top))] pb-6 px-6">
+    <div className="min-h-screen bg-black pb-24 md:pb-0 md:pt-16">
+      {/* Header - Mobile only */}
+      <div className="md:hidden bg-zinc-900 border-b border-zinc-800 pt-[calc(1.5rem+env(safe-area-inset-top))] pb-6 px-6">
         <div className="max-w-2xl mx-auto">
           <h1 className="text-xl font-semibold text-white">Finance</h1>
           <p className="text-sm text-zinc-400 mt-1">Dashboard</p>
@@ -159,11 +159,29 @@ const Dashboard = () => {
       </div>
 
       {/* Content */}
-      <div className="max-w-2xl mx-auto px-4 mt-6">
-        <NetWorthCard profile={profile} />
-        <MonthlyExpenses expenses={expenses} />
-        <GoalTracker goals={goals} netWorth={netWorth} />
-        <ExpenseList expenses={expenses} onDelete={handleDeleteExpense} onEdit={handleEditExpense} />
+      <div className="max-w-7xl mx-auto px-4 md:px-6 mt-6">
+        {/* Desktop Grid Layout */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+          {/* Net Worth - Full width on mobile, spans 2 cols on lg */}
+          <div className="md:col-span-2 lg:col-span-2">
+            <NetWorthCard profile={profile} />
+          </div>
+
+          {/* Monthly Expenses */}
+          <div className="md:col-span-2 lg:col-span-1">
+            <MonthlyExpenses expenses={expenses} />
+          </div>
+
+          {/* Goal Tracker - Full width */}
+          <div className="md:col-span-2 lg:col-span-3">
+            <GoalTracker goals={goals} netWorth={netWorth} />
+          </div>
+
+          {/* Expense List - Full width */}
+          <div className="md:col-span-2 lg:col-span-3">
+            <ExpenseList expenses={expenses} onDelete={handleDeleteExpense} onEdit={handleEditExpense} />
+          </div>
+        </div>
       </div>
 
       {/* Floating Add Button */}
@@ -172,7 +190,7 @@ const Dashboard = () => {
           setEditingExpense(null);
           setIsExpenseFormOpen(true);
         }}
-        className="fixed bottom-20 right-6 w-14 h-14 bg-emerald-600 hover:bg-emerald-700 text-white rounded-full flex items-center justify-center transition-colors z-40"
+        className="fixed bottom-20 md:bottom-6 right-6 w-14 h-14 bg-emerald-600 hover:bg-emerald-700 text-white rounded-full flex items-center justify-center transition-colors z-40 shadow-lg"
       >
         <Plus className="w-6 h-6" />
       </button>
