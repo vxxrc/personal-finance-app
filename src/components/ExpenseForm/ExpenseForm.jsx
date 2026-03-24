@@ -157,8 +157,9 @@ const ExpenseForm = ({ isOpen, onClose, onSubmit, editingExpense = null }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4 pb-20">
-      <div className="bg-zinc-900 w-full max-w-md rounded-2xl shadow-2xl border border-zinc-800 max-h-[85vh] overflow-y-auto">
+    <div className="fixed inset-0 bg-black bg-opacity-75 z-50 overflow-y-auto">
+      <div className="min-h-full flex items-start justify-center p-4 py-8">
+        <div className="bg-zinc-900 w-full max-w-md rounded-2xl shadow-2xl border border-zinc-800 my-auto">
         {/* Header */}
         <div className="flex justify-between items-center p-6 border-b border-zinc-700 sticky top-0 bg-zinc-900 z-10">
           <h2 className="text-xl font-semibold text-white">{editingExpense ? 'Edit Transaction' : 'Add Transaction'}</h2>
@@ -352,6 +353,7 @@ const ExpenseForm = ({ isOpen, onClose, onSubmit, editingExpense = null }) => {
             </button>
           </div>
         </form>
+        </div>
       </div>
     </div>
   );

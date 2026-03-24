@@ -14,25 +14,18 @@
 }
 
 html {
-  /* Use fixed height for mobile viewport stability */
   height: 100%;
   background: #000000;
 }
 
 body {
   margin: 0;
-  /* Fix mobile keyboard issue by using fixed viewport height */
-  height: 100vh;
-  height: 100dvh; /* Dynamic viewport height - excludes keyboard */
-  overflow: hidden;
+  min-height: 100%;
   background: #000000;
 }
 
 #root {
-  height: 100%;
-  overflow-y: auto;
-  overflow-x: hidden;
-  -webkit-overflow-scrolling: touch;
+  min-height: 100vh;
   background: #000000;
 }
 
