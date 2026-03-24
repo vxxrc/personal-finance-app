@@ -85,25 +85,6 @@ const Navigation = () => {
       <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-zinc-900 border-t border-zinc-800 z-50">
         <div className="max-w-2xl mx-auto px-4">
           <div className="flex justify-around items-center h-16">
-            {/* Privacy Toggle Button */}
-            <button
-              onClick={handlePrivacyToggle}
-              className={`flex flex-col items-center justify-center flex-1 h-full transition-colors ${
-                numbersHidden
-                  ? 'text-red-400'
-                  : 'text-zinc-400 hover:text-zinc-300'
-              }`}
-            >
-              {numbersHidden ? (
-                <EyeOff className="w-6 h-6 mb-1" />
-              ) : (
-                <Eye className="w-6 h-6 mb-1" />
-              )}
-              <span className="text-xs font-medium">
-                {numbersHidden ? 'Hidden' : 'Hide'}
-              </span>
-            </button>
-
             {navItems.map(({ path, icon: Icon, label }) => {
               const isActive = location.pathname === path;
               return (
@@ -124,6 +105,23 @@ const Navigation = () => {
           </div>
         </div>
       </nav>
+
+      {/* Mobile Privacy Toggle - Top Right Floating Button */}
+      <button
+        onClick={handlePrivacyToggle}
+        className={`md:hidden fixed top-4 right-4 z-40 p-3 rounded-full shadow-lg transition-all ${
+          numbersHidden
+            ? 'bg-red-600 text-white'
+            : 'bg-zinc-900 text-zinc-300 border border-zinc-700'
+        }`}
+        style={{ top: 'calc(1rem + env(safe-area-inset-top))' }}
+      >
+        {numbersHidden ? (
+          <EyeOff className="w-5 h-5" />
+        ) : (
+          <Eye className="w-5 h-5" />
+        )}
+      </button>
 
       {/* Password Modal */}
       <PasswordModal
