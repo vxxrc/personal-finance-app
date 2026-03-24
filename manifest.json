@@ -2,14 +2,15 @@
   "name": "Personal Finance",
   "short_name": "Finance",
   "description": "Track your personal finances, investments, and goals",
-  "start_url": "/",
+  "start_url": "/personal-finance-app/",
+  "scope": "/personal-finance-app/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#2563eb",
   "orientation": "portrait",
   "icons": [
     {
-      "src": "/favicon.svg",
+      "src": "/personal-finance-app/favicon.svg",
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "any maskable"
