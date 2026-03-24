@@ -14,9 +14,8 @@
 }
 
 html {
-  /* Prevent viewport resize when keyboard opens on mobile */
+  /* Use fixed height for mobile viewport stability */
   height: 100%;
-  overflow: hidden;
 }
 
 body {
@@ -25,11 +24,6 @@ body {
   min-height: 100vh;
   min-height: -webkit-fill-available;
   background: #f8f9fa;
-  /* Prevent layout shift on mobile keyboards */
-  position: fixed;
-  width: 100%;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
 }
 
 #root {
