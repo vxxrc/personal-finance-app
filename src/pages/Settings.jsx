@@ -40,6 +40,7 @@ const Settings = () => {
 
   const [isSaving, setIsSaving] = useState(false);
   const [timeFilter, setTimeFilter] = useState('month'); // 'week', 'month', 'all'
+  const [activeTab, setActiveTab] = useState('settings'); // 'settings' or 'insights'
 
   // Sync formData with profile when it loads
   useEffect(() => {
@@ -146,250 +147,284 @@ const Settings = () => {
         </div>
       </div>
 
-      {/* Content */}
-      <div className="max-w-2xl mx-auto px-4 mt-6 space-y-4">
-        {/* Financial Accounts */}
-        <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-6">
-          <h2 className="text-base font-semibold text-white mb-6">
-            Financial Accounts
-          </h2>
-
-          <div className="space-y-4">
-            <InputField
-              label="Bank Balance"
-              field="bankBalance"
-              value={formData.bankBalance}
-              onChange={(e) => handleChange('bankBalance', e.target.value)}
-            />
-            <InputField
-              label="Stocks Value"
-              field="stocksValue"
-              value={formData.stocksValue}
-              onChange={(e) => handleChange('stocksValue', e.target.value)}
-            />
-            <InputField
-              label="Crypto Value"
-              field="cryptoValue"
-              value={formData.cryptoValue}
-              onChange={(e) => handleChange('cryptoValue', e.target.value)}
-            />
-            <InputField
-              label="Credit Card Due"
-              field="creditCardDue"
-              value={formData.creditCardDue}
-              onChange={(e) => handleChange('creditCardDue', e.target.value)}
-            />
-            <InputField
-              label="Monthly Salary"
-              field="monthlySalary"
-              value={formData.monthlySalary}
-              onChange={(e) => handleChange('monthlySalary', e.target.value)}
-            />
-          </div>
-
-          {/* Save Button */}
+      {/* Tab Navigation */}
+      <div className="max-w-2xl mx-auto px-4 mt-6">
+        <div className="flex gap-2 mb-6">
           <button
-            onClick={handleSave}
-            disabled={isSaving}
-            className="w-full mt-6 py-3 bg-emerald-600 hover:bg-emerald-700 disabled:bg-zinc-700 text-white font-medium rounded-lg transition-colors flex items-center justify-center gap-2"
+            onClick={() => setActiveTab('settings')}
+            className={`flex-1 py-3 text-sm font-medium rounded-lg transition-colors ${
+              activeTab === 'settings'
+                ? 'bg-emerald-600 text-white'
+                : 'bg-zinc-900 text-zinc-300 hover:bg-zinc-800 border border-zinc-800'
+            }`}
           >
-            <Save className="w-4 h-4" />
-            {isSaving ? 'Saving...' : 'Save Changes'}
+            Account Settings
+          </button>
+          <button
+            onClick={() => setActiveTab('insights')}
+            className={`flex-1 py-3 text-sm font-medium rounded-lg transition-colors ${
+              activeTab === 'insights'
+                ? 'bg-emerald-600 text-white'
+                : 'bg-zinc-900 text-zinc-300 hover:bg-zinc-800 border border-zinc-800'
+            }`}
+          >
+            Insights & Analysis
           </button>
         </div>
+      </div>
 
-        {/* Spending Analysis */}
-        <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-6">
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-base font-semibold text-white">
-              Spending Analysis
-            </h2>
-            <Calendar className="w-5 h-5 text-zinc-400" />
-          </div>
+      {/* Content */}
+      <div className="max-w-2xl mx-auto px-4 space-y-4">
+        {activeTab === 'settings' && (
+          <>
+            {/* Financial Accounts */}
+            <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-6">
+              <h2 className="text-base font-semibold text-white mb-6">
+                Financial Accounts
+              </h2>
 
-          {/* Time Filter */}
-          <div className="flex gap-2 mb-6">
-            <button
-              onClick={() => setTimeFilter('week')}
-              className={`flex-1 py-2 text-sm rounded-lg font-medium transition-colors ${
-                timeFilter === 'week'
-                  ? 'bg-emerald-600 text-white'
-                  : 'bg-zinc-800 text-zinc-300 hover:bg-zinc-700'
-              }`}
-            >
-              This Week
-            </button>
-            <button
-              onClick={() => setTimeFilter('month')}
-              className={`flex-1 py-2 text-sm rounded-lg font-medium transition-colors ${
-                timeFilter === 'month'
-                  ? 'bg-emerald-600 text-white'
-                  : 'bg-zinc-800 text-zinc-300 hover:bg-zinc-700'
-              }`}
-            >
-              This Month
-            </button>
-            <button
-              onClick={() => setTimeFilter('all')}
-              className={`flex-1 py-2 text-sm rounded-lg font-medium transition-colors ${
-                timeFilter === 'all'
-                  ? 'bg-emerald-600 text-white'
-                  : 'bg-zinc-800 text-zinc-300 hover:bg-zinc-700'
-              }`}
-            >
-              All Time
-            </button>
-          </div>
-
-          {/* Summary Cards */}
-          <div className="grid grid-cols-2 gap-3 mb-6">
-            <div className="bg-black border border-zinc-800 rounded-lg p-4">
-              <div className="flex items-center gap-2 mb-2">
-                <TrendingDown className="w-4 h-4 text-red-400" />
-                <p className="text-xs text-zinc-400">Total Expenses</p>
+              <div className="space-y-4">
+                <InputField
+                  label="Bank Balance"
+                  field="bankBalance"
+                  value={formData.bankBalance}
+                  onChange={(e) => handleChange('bankBalance', e.target.value)}
+                />
+                <InputField
+                  label="Stocks Value"
+                  field="stocksValue"
+                  value={formData.stocksValue}
+                  onChange={(e) => handleChange('stocksValue', e.target.value)}
+                />
+                <InputField
+                  label="Crypto Value"
+                  field="cryptoValue"
+                  value={formData.cryptoValue}
+                  onChange={(e) => handleChange('cryptoValue', e.target.value)}
+                />
+                <InputField
+                  label="Credit Card Due"
+                  field="creditCardDue"
+                  value={formData.creditCardDue}
+                  onChange={(e) => handleChange('creditCardDue', e.target.value)}
+                />
+                <InputField
+                  label="Monthly Salary"
+                  field="monthlySalary"
+                  value={formData.monthlySalary}
+                  onChange={(e) => handleChange('monthlySalary', e.target.value)}
+                />
               </div>
-              <p className="text-lg font-semibold text-white">
-                {formatCurrency(spendingAnalysis.totalExpenses)}
-              </p>
-            </div>
-            <div className="bg-black border border-zinc-800 rounded-lg p-4">
-              <div className="flex items-center gap-2 mb-2">
-                <TrendingUp className="w-4 h-4 text-emerald-400" />
-                <p className="text-xs text-zinc-400">Total Income</p>
-              </div>
-              <p className="text-lg font-semibold text-white">
-                {formatCurrency(spendingAnalysis.totalIncome)}
-              </p>
-            </div>
-          </div>
 
-          {/* Net Cash Flow */}
-          <div className="bg-black border border-zinc-800 rounded-lg p-4 mb-6">
-            <div className="flex justify-between items-center">
-              <p className="text-sm text-zinc-400">Net Cash Flow</p>
-              <p className={`text-lg font-semibold ${
-                spendingAnalysis.netCashFlow >= 0 ? 'text-emerald-400' : 'text-red-400'
-              }`}>
-                {spendingAnalysis.netCashFlow >= 0 ? '+' : ''}
-                {formatCurrency(Math.abs(spendingAnalysis.netCashFlow))}
-              </p>
+              {/* Save Button */}
+              <button
+                onClick={handleSave}
+                disabled={isSaving}
+                className="w-full mt-6 py-3 bg-emerald-600 hover:bg-emerald-700 disabled:bg-zinc-700 text-white font-medium rounded-lg transition-colors flex items-center justify-center gap-2"
+              >
+                <Save className="w-4 h-4" />
+                {isSaving ? 'Saving...' : 'Save Changes'}
+              </button>
             </div>
-          </div>
 
-          {/* Average Daily Spending */}
-          <div className="bg-black border border-zinc-800 rounded-lg p-4 mb-6">
-            <div className="flex justify-between items-center">
-              <p className="text-sm text-zinc-400">Average Daily Spending</p>
-              <p className="text-lg font-semibold text-white">
-                {formatCurrency(spendingAnalysis.avgDailySpending)}
-              </p>
-            </div>
-          </div>
-
-          {/* Top Spending Categories */}
-          {spendingAnalysis.topCategories.length > 0 && (
-            <div>
-              <div className="flex items-center gap-2 mb-4">
-                <PieChart className="w-4 h-4 text-zinc-400" />
-                <h3 className="text-sm font-semibold text-white">Top Spending Categories</h3>
-              </div>
-              <div className="space-y-3">
-                {spendingAnalysis.topCategories.map(([category, amount], index) => {
-                  const percentage = (amount / spendingAnalysis.totalExpenses) * 100;
-                  return (
-                    <div key={category}>
-                      <div className="flex justify-between items-center mb-2">
-                        <span className="text-sm text-zinc-300">{category}</span>
-                        <span className="text-sm font-semibold text-white">
-                          {formatCurrency(amount)}
-                        </span>
-                      </div>
-                      <div className="w-full bg-zinc-800 rounded-full h-2">
-                        <div
-                          className="bg-emerald-600 h-full rounded-full transition-all"
-                          style={{ width: `${percentage}%` }}
-                        />
-                      </div>
-                      <p className="text-xs text-zinc-500 mt-1 text-right">
-                        {percentage.toFixed(1)}% of total
-                      </p>
-                    </div>
-                  );
-                })}
+            {/* Account Section */}
+            <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-6">
+              <h2 className="text-base font-semibold text-white mb-4">
+                Account
+              </h2>
+              <div className="space-y-4">
+                <div className="p-4 bg-black border border-zinc-800 rounded-lg">
+                  <p className="text-xs text-zinc-500">Logged in as</p>
+                  <p className="text-sm text-white mt-1">{user?.email}</p>
+                </div>
+                <button
+                  onClick={logout}
+                  className="w-full py-3 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg transition-colors flex items-center justify-center gap-2"
+                >
+                  <LogOut className="w-4 h-4" />
+                  Logout
+                </button>
               </div>
             </div>
-          )}
-        </div>
+          </>
+        )}
 
-        {/* Recent Transactions */}
-        <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-6">
-          <h2 className="text-base font-semibold text-white mb-4">
-            Recent Transactions
-          </h2>
+        {activeTab === 'insights' && (
+          <>
+            {/* Spending Analysis */}
+            <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-6">
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-base font-semibold text-white">
+                  Spending Analysis
+                </h2>
+                <Calendar className="w-5 h-5 text-zinc-400" />
+              </div>
 
-          {filteredTransactions.length === 0 ? (
-            <p className="text-sm text-zinc-400 text-center py-8">
-              No transactions for this period
-            </p>
-          ) : (
-            <div className="space-y-2">
-              <p className="text-xs text-zinc-500 mb-3">
-                Showing {filteredTransactions.length} transaction{filteredTransactions.length !== 1 ? 's' : ''}
-              </p>
-              <div className="space-y-2 max-h-96 overflow-y-auto">
-                {filteredTransactions.map((transaction) => (
-                  <div
-                    key={transaction.id}
-                    className="flex justify-between items-center p-3 bg-black border border-zinc-800 rounded-lg hover:border-zinc-700 transition-colors"
-                  >
-                    <div>
-                      <p className="text-sm font-medium text-white">
-                        {transaction.subCategory || transaction.category}
-                      </p>
-                      <p className="text-xs text-zinc-500">
-                        {format(new Date(transaction.date), 'MMM dd, yyyy • h:mm a')}
-                      </p>
-                      {transaction.note && (
-                        <p className="text-xs text-zinc-400 mt-1">{transaction.note}</p>
-                      )}
-                    </div>
-                    <div className="text-right">
-                      <p className={`text-sm font-semibold ${
-                        transaction.type === 'income' ? 'text-emerald-400' : 'text-red-400'
-                      }`}>
-                        {transaction.type === 'income' ? '+' : '-'}
-                        {formatCurrency(transaction.amount)}
-                      </p>
-                      <p className="text-xs text-zinc-500">
-                        {transaction.paymentMethod === 'credit' ? 'Credit Card' : 'Bank'}
-                      </p>
-                    </div>
+              {/* Time Filter */}
+              <div className="flex gap-2 mb-6">
+                <button
+                  onClick={() => setTimeFilter('week')}
+                  className={`flex-1 py-2 text-sm rounded-lg font-medium transition-colors ${
+                    timeFilter === 'week'
+                      ? 'bg-emerald-600 text-white'
+                      : 'bg-zinc-800 text-zinc-300 hover:bg-zinc-700'
+                  }`}
+                >
+                  This Week
+                </button>
+                <button
+                  onClick={() => setTimeFilter('month')}
+                  className={`flex-1 py-2 text-sm rounded-lg font-medium transition-colors ${
+                    timeFilter === 'month'
+                      ? 'bg-emerald-600 text-white'
+                      : 'bg-zinc-800 text-zinc-300 hover:bg-zinc-700'
+                  }`}
+                >
+                  This Month
+                </button>
+                <button
+                  onClick={() => setTimeFilter('all')}
+                  className={`flex-1 py-2 text-sm rounded-lg font-medium transition-colors ${
+                    timeFilter === 'all'
+                      ? 'bg-emerald-600 text-white'
+                      : 'bg-zinc-800 text-zinc-300 hover:bg-zinc-700'
+                  }`}
+                >
+                  All Time
+                </button>
+              </div>
+
+              {/* Summary Cards */}
+              <div className="grid grid-cols-2 gap-3 mb-6">
+                <div className="bg-black border border-zinc-800 rounded-lg p-4">
+                  <div className="flex items-center gap-2 mb-2">
+                    <TrendingDown className="w-4 h-4 text-red-400" />
+                    <p className="text-xs text-zinc-400">Total Expenses</p>
                   </div>
-                ))}
+                  <p className="text-lg font-semibold text-white">
+                    {formatCurrency(spendingAnalysis.totalExpenses)}
+                  </p>
+                </div>
+                <div className="bg-black border border-zinc-800 rounded-lg p-4">
+                  <div className="flex items-center gap-2 mb-2">
+                    <TrendingUp className="w-4 h-4 text-emerald-400" />
+                    <p className="text-xs text-zinc-400">Total Income</p>
+                  </div>
+                  <p className="text-lg font-semibold text-white">
+                    {formatCurrency(spendingAnalysis.totalIncome)}
+                  </p>
+                </div>
               </div>
-            </div>
-          )}
-        </div>
 
-        {/* Account Section */}
-        <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-6">
-          <h2 className="text-base font-semibold text-white mb-4">
-            Account
-          </h2>
-          <div className="space-y-4">
-            <div className="p-4 bg-black border border-zinc-800 rounded-lg">
-              <p className="text-xs text-zinc-500">Logged in as</p>
-              <p className="text-sm text-white mt-1">{user?.email}</p>
+              {/* Net Cash Flow */}
+              <div className="bg-black border border-zinc-800 rounded-lg p-4 mb-6">
+                <div className="flex justify-between items-center">
+                  <p className="text-sm text-zinc-400">Net Cash Flow</p>
+                  <p className={`text-lg font-semibold ${
+                    spendingAnalysis.netCashFlow >= 0 ? 'text-emerald-400' : 'text-red-400'
+                  }`}>
+                    {spendingAnalysis.netCashFlow >= 0 ? '+' : ''}
+                    {formatCurrency(Math.abs(spendingAnalysis.netCashFlow))}
+                  </p>
+                </div>
+              </div>
+
+              {/* Average Daily Spending */}
+              <div className="bg-black border border-zinc-800 rounded-lg p-4 mb-6">
+                <div className="flex justify-between items-center">
+                  <p className="text-sm text-zinc-400">Average Daily Spending</p>
+                  <p className="text-lg font-semibold text-white">
+                    {formatCurrency(spendingAnalysis.avgDailySpending)}
+                  </p>
+                </div>
+              </div>
+
+              {/* Top Spending Categories */}
+              {spendingAnalysis.topCategories.length > 0 && (
+                <div>
+                  <div className="flex items-center gap-2 mb-4">
+                    <PieChart className="w-4 h-4 text-zinc-400" />
+                    <h3 className="text-sm font-semibold text-white">Top Spending Categories</h3>
+                  </div>
+                  <div className="space-y-3">
+                    {spendingAnalysis.topCategories.map(([category, amount], index) => {
+                      const percentage = (amount / spendingAnalysis.totalExpenses) * 100;
+                      return (
+                        <div key={category}>
+                          <div className="flex justify-between items-center mb-2">
+                            <span className="text-sm text-zinc-300">{category}</span>
+                            <span className="text-sm font-semibold text-white">
+                              {formatCurrency(amount)}
+                            </span>
+                          </div>
+                          <div className="w-full bg-zinc-800 rounded-full h-2">
+                            <div
+                              className="bg-emerald-600 h-full rounded-full transition-all"
+                              style={{ width: `${percentage}%` }}
+                            />
+                          </div>
+                          <p className="text-xs text-zinc-500 mt-1 text-right">
+                            {percentage.toFixed(1)}% of total
+                          </p>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
             </div>
-            <button
-              onClick={logout}
-              className="w-full py-3 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg transition-colors flex items-center justify-center gap-2"
-            >
-              <LogOut className="w-4 h-4" />
-              Logout
-            </button>
-          </div>
-        </div>
+
+            {/* Recent Transactions */}
+            <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-6">
+              <h2 className="text-base font-semibold text-white mb-4">
+                Recent Transactions
+              </h2>
+
+              {filteredTransactions.length === 0 ? (
+                <p className="text-sm text-zinc-400 text-center py-8">
+                  No transactions for this period
+                </p>
+              ) : (
+                <div className="space-y-2">
+                  <p className="text-xs text-zinc-500 mb-3">
+                    Showing {filteredTransactions.length} transaction{filteredTransactions.length !== 1 ? 's' : ''}
+                  </p>
+                  <div className="space-y-2 max-h-96 overflow-y-auto">
+                    {filteredTransactions.map((transaction) => (
+                      <div
+                        key={transaction.id}
+                        className="flex justify-between items-center p-3 bg-black border border-zinc-800 rounded-lg hover:border-zinc-700 transition-colors"
+                      >
+                        <div>
+                          <p className="text-sm font-medium text-white">
+                            {transaction.subCategory || transaction.category}
+                          </p>
+                          <p className="text-xs text-zinc-500">
+                            {format(new Date(transaction.date), 'MMM dd, yyyy • h:mm a')}
+                          </p>
+                          {transaction.note && (
+                            <p className="text-xs text-zinc-400 mt-1">{transaction.note}</p>
+                          )}
+                        </div>
+                        <div className="text-right">
+                          <p className={`text-sm font-semibold ${
+                            transaction.type === 'income' ? 'text-emerald-400' : 'text-red-400'
+                          }`}>
+                            {transaction.type === 'income' ? '+' : '-'}
+                            {formatCurrency(transaction.amount)}
+                          </p>
+                          <p className="text-xs text-zinc-500">
+                            {transaction.paymentMethod === 'credit' ? 'Credit Card' : 'Bank'}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
