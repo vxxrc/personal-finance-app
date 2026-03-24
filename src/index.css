@@ -16,6 +16,7 @@
 html {
   /* Use fixed height for mobile viewport stability */
   height: 100%;
+  background: #000000;
 }
 
 body {
@@ -24,7 +25,7 @@ body {
   height: 100vh;
   height: 100dvh; /* Dynamic viewport height - excludes keyboard */
   overflow: hidden;
-  background: #f8f9fa;
+  background: #000000;
 }
 
 #root {
@@ -32,12 +33,7 @@ body {
   overflow-y: auto;
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
-}
-
-@media (prefers-color-scheme: dark) {
-  body {
-    background: #0f172a;
-  }
+  background: #000000;
 }
 
 * {
