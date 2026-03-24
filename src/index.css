@@ -20,15 +20,18 @@ html {
 
 body {
   margin: 0;
-  /* Use -webkit-fill-available for iOS Safari compatibility */
-  min-height: 100vh;
-  min-height: -webkit-fill-available;
+  /* Fix mobile keyboard issue by using fixed viewport height */
+  height: 100vh;
+  height: 100dvh; /* Dynamic viewport height - excludes keyboard */
+  overflow: hidden;
   background: #f8f9fa;
 }
 
 #root {
-  min-height: 100vh;
-  min-height: -webkit-fill-available;
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
 }
 
 @media (prefers-color-scheme: dark) {

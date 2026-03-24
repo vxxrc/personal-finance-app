@@ -1,6 +1,8 @@
 import { useState, useEffect, useMemo } from 'react';
+import { Save, LogOut, Calendar, TrendingUp, TrendingDown, PieChart } from 'lucide-react';
+import { useProfile } from '../hooks/useProfile';
 import { useExpenses } from '../hooks/useExpenses';
-import { useAuth } from "../contexts/AuthContext";
+import { useAuth } from '../contexts/AuthContext';
 import { formatCurrency } from '../services/calculations';
 import { format, startOfWeek, startOfMonth, isAfter } from 'date-fns';
 
@@ -24,8 +26,9 @@ const InputField = ({ label, field, value, onChange }) => (
 );
 
 const Settings = () => {
-  const { numbersHidden } = useAuth();  const { profile, updateProfile, loading } = useProfile();
+  const { profile, updateProfile, loading } = useProfile();
   const { expenses } = useExpenses();
+  const { logout, user, numbersHidden } = useAuth();
 
   const [formData, setFormData] = useState({
     bankBalance: 0,
@@ -54,7 +57,7 @@ const Settings = () => {
 
   // Filter transactions by time period
   const filteredTransactions = useMemo(() => {
-  const { numbersHidden } = useAuth();    if (!expenses) return [];
+    if (!expenses) return [];
 
     const now = new Date();
     let startDate;
@@ -74,7 +77,7 @@ const Settings = () => {
 
   // Calculate spending analysis
   const spendingAnalysis = useMemo(() => {
-  const { numbersHidden } = useAuth();    const expenseTransactions = filteredTransactions.filter(t => t.type === 'expense');
+    const expenseTransactions = filteredTransactions.filter(t => t.type === 'expense');
     const incomeTransactions = filteredTransactions.filter(t => t.type === 'income');
 
     // Total spending by category
@@ -108,14 +111,14 @@ const Settings = () => {
   }, [filteredTransactions, timeFilter]);
 
   const handleChange = (field, value) => {
-  const { numbersHidden } = useAuth();    setFormData(prev => ({
+    setFormData(prev => ({
       ...prev,
       [field]: parseFloat(value) || 0
     }));
   };
 
   const handleSave = async () => {
-  const { numbersHidden } = useAuth();    setIsSaving(true);
+    setIsSaving(true);
     try {
       await updateProfile(formData);
       alert('Profile updated successfully!');
