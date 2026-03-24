@@ -3,7 +3,9 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signOut,
-  onAuthStateChanged
+  onAuthStateChanged,
+  EmailAuthProvider,
+  reauthenticateWithCredential
 } from 'firebase/auth';
 import { auth } from '../services/firebase';
 
@@ -20,6 +22,7 @@ export const useAuth = () => {
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [numbersHidden, setNumbersHidden] = useState(false);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -42,12 +45,37 @@ export const AuthProvider = ({ children }) => {
     return signOut(auth);
   };
 
+  const hideNumbers = () => {
+    setNumbersHidden(true);
+  };
+
+  const verifyPasswordAndShow = async (password) => {
+    if (!user || !user.email) {
+      throw new Error('No user logged in');
+    }
+
+    try {
+      // Re-authenticate user with password
+      const credential = EmailAuthProvider.credential(user.email, password);
+      await reauthenticateWithCredential(auth.currentUser, credential);
+
+      // If successful, show numbers
+      setNumbersHidden(false);
+      return true;
+    } catch (error) {
+      throw new Error('Incorrect password');
+    }
+  };
+
   const value = {
     user,
     signup,
     login,
     logout,
-    loading
+    loading,
+    numbersHidden,
+    hideNumbers,
+    verifyPasswordAndShow
   };
 
   return (

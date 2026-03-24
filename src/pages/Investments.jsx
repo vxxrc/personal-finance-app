@@ -1,9 +1,10 @@
 import { TrendingUp, Bitcoin, PieChart } from 'lucide-react';
+import { useAuth } from "../contexts/AuthContext";
 import { useProfile } from '../hooks/useProfile';
 import { formatCurrency } from '../services/calculations';
 
 const Investments = () => {
-  const { profile } = useProfile();
+  const { numbersHidden } = useAuth();  const { profile } = useProfile();
 
   if (!profile) {
     return (
@@ -38,7 +39,7 @@ const Investments = () => {
                 <p className="text-sm text-zinc-400">Total Portfolio</p>
               </div>
               <h2 className="text-4xl font-bold text-white">
-                {formatCurrency(totalInvestments)}
+                {formatCurrency(totalInvestments, numbersHidden)}
               </h2>
             </div>
           </div>
@@ -67,7 +68,7 @@ const Investments = () => {
               />
             </div>
             <p className="text-right text-lg font-semibold text-white">
-              {formatCurrency(profile.stocksValue || 0)}
+              {formatCurrency(profile.stocksValue || 0, numbersHidden)}
             </p>
           </div>
 
@@ -89,7 +90,7 @@ const Investments = () => {
               />
             </div>
             <p className="text-right text-lg font-semibold text-white">
-              {formatCurrency(profile.cryptoValue || 0)}
+              {formatCurrency(profile.cryptoValue || 0, numbersHidden)}
             </p>
           </div>
         </div>

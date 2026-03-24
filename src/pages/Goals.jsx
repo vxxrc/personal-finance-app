@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useAuth } from "../contexts/AuthContext";
 import { Plus, Target, Trash2, Edit2 } from 'lucide-react';
 import { useGoals } from '../hooks/useGoals';
 import { useProfile } from '../hooks/useProfile';
@@ -6,7 +7,7 @@ import { calculateNetWorth, calculateGoalProgress, calculateMonthlySavingsNeeded
 import { format } from 'date-fns';
 
 const Goals = () => {
-  const { goals, addGoal, updateGoal, deleteGoal } = useGoals();
+  const { numbersHidden } = useAuth();  const { goals, addGoal, updateGoal, deleteGoal } = useGoals();
   const { profile } = useProfile();
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingGoal, setEditingGoal] = useState(null);
@@ -23,7 +24,7 @@ const Goals = () => {
   });
 
   const handleEdit = (goal) => {
-    setEditingGoal(goal);
+  const { numbersHidden } = useAuth();    setEditingGoal(goal);
     setFormData({
       name: goal.name,
       targetAmount: goal.targetAmount.toString(),
@@ -36,7 +37,7 @@ const Goals = () => {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+  const { numbersHidden } = useAuth();    e.preventDefault();
     try {
       if (editingGoal) {
         // Update existing goal
@@ -76,7 +77,7 @@ const Goals = () => {
   };
 
   const handleCancelEdit = () => {
-    setFormData({
+  const { numbersHidden } = useAuth();    setFormData({
       name: '',
       targetAmount: '',
       targetDate: '',
@@ -89,7 +90,7 @@ const Goals = () => {
   };
 
   const handleDelete = async (goalId) => {
-    if (!confirm('Delete this goal?')) return;
+  const { numbersHidden } = useAuth();    if (!confirm('Delete this goal?')) return;
     try {
       await deleteGoal(goalId);
     } catch (error) {
@@ -163,10 +164,10 @@ const Goals = () => {
                   <div className="mb-4">
                     <div className="flex justify-between text-sm mb-2">
                       <span className="text-zinc-400">
-                        {formatCurrency(currentAmount)}
+                        {formatCurrency(currentAmount, numbersHidden)}
                       </span>
                       <span className="font-semibold text-white">
-                        {formatCurrency(goal.targetAmount)}
+                        {formatCurrency(goal.targetAmount, numbersHidden)}
                       </span>
                     </div>
                     <div className="w-full bg-zinc-800 rounded-full h-3">
@@ -187,14 +188,14 @@ const Goals = () => {
                     {goal.monthlyInvestment > 0 && (
                       <div className="bg-zinc-800 border border-zinc-700 rounded-lg p-3">
                         <p className="text-sm text-zinc-300">
-                          Already investing <strong className="text-white">{formatCurrency(goal.monthlyInvestment)}/month</strong>
+                          Already investing <strong className="text-white">{formatCurrency(goal.monthlyInvestment, numbersHidden)}/month</strong>
                         </p>
                       </div>
                     )}
                     {monthlySavings > 0 && (
                       <div className="bg-zinc-800 border border-zinc-700 rounded-lg p-3">
                         <p className="text-sm text-zinc-300">
-                          {goal.monthlyInvestment > 0 ? 'Additionally save' : 'Save'} <strong className="text-white">{formatCurrency(monthlySavings)}/month</strong> to reach this goal on time
+                          {goal.monthlyInvestment > 0 ? 'Additionally save' : 'Save'} <strong className="text-white">{formatCurrency(monthlySavings, numbersHidden)}/month</strong> to reach this goal on time
                         </p>
                       </div>
                     )}

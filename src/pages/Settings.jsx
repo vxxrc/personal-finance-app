@@ -1,8 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
-import { Save, LogOut, Calendar, TrendingUp, TrendingDown, PieChart } from 'lucide-react';
-import { useProfile } from '../hooks/useProfile';
 import { useExpenses } from '../hooks/useExpenses';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from "../contexts/AuthContext";
 import { formatCurrency } from '../services/calculations';
 import { format, startOfWeek, startOfMonth, isAfter } from 'date-fns';
 
@@ -26,9 +24,8 @@ const InputField = ({ label, field, value, onChange }) => (
 );
 
 const Settings = () => {
-  const { profile, updateProfile, loading } = useProfile();
+  const { numbersHidden } = useAuth();  const { profile, updateProfile, loading } = useProfile();
   const { expenses } = useExpenses();
-  const { logout, user } = useAuth();
 
   const [formData, setFormData] = useState({
     bankBalance: 0,
@@ -57,7 +54,7 @@ const Settings = () => {
 
   // Filter transactions by time period
   const filteredTransactions = useMemo(() => {
-    if (!expenses) return [];
+  const { numbersHidden } = useAuth();    if (!expenses) return [];
 
     const now = new Date();
     let startDate;
@@ -77,7 +74,7 @@ const Settings = () => {
 
   // Calculate spending analysis
   const spendingAnalysis = useMemo(() => {
-    const expenseTransactions = filteredTransactions.filter(t => t.type === 'expense');
+  const { numbersHidden } = useAuth();    const expenseTransactions = filteredTransactions.filter(t => t.type === 'expense');
     const incomeTransactions = filteredTransactions.filter(t => t.type === 'income');
 
     // Total spending by category
@@ -111,14 +108,14 @@ const Settings = () => {
   }, [filteredTransactions, timeFilter]);
 
   const handleChange = (field, value) => {
-    setFormData(prev => ({
+  const { numbersHidden } = useAuth();    setFormData(prev => ({
       ...prev,
       [field]: parseFloat(value) || 0
     }));
   };
 
   const handleSave = async () => {
-    setIsSaving(true);
+  const { numbersHidden } = useAuth();    setIsSaving(true);
     try {
       await updateProfile(formData);
       alert('Profile updated successfully!');
@@ -302,7 +299,7 @@ const Settings = () => {
                     <p className="text-xs text-zinc-400">Total Expenses</p>
                   </div>
                   <p className="text-lg font-semibold text-white">
-                    {formatCurrency(spendingAnalysis.totalExpenses)}
+                    {formatCurrency(spendingAnalysis.totalExpenses, numbersHidden)}
                   </p>
                 </div>
                 <div className="bg-black border border-zinc-800 rounded-lg p-4">
@@ -311,7 +308,7 @@ const Settings = () => {
                     <p className="text-xs text-zinc-400">Total Income</p>
                   </div>
                   <p className="text-lg font-semibold text-white">
-                    {formatCurrency(spendingAnalysis.totalIncome)}
+                    {formatCurrency(spendingAnalysis.totalIncome, numbersHidden)}
                   </p>
                 </div>
               </div>
@@ -324,7 +321,7 @@ const Settings = () => {
                     spendingAnalysis.netCashFlow >= 0 ? 'text-emerald-400' : 'text-red-400'
                   }`}>
                     {spendingAnalysis.netCashFlow >= 0 ? '+' : ''}
-                    {formatCurrency(Math.abs(spendingAnalysis.netCashFlow))}
+                    {formatCurrency(Math.abs(spendingAnalysis.netCashFlow, numbersHidden))}
                   </p>
                 </div>
               </div>
@@ -334,7 +331,7 @@ const Settings = () => {
                 <div className="flex justify-between items-center">
                   <p className="text-sm text-zinc-400">Average Daily Spending</p>
                   <p className="text-lg font-semibold text-white">
-                    {formatCurrency(spendingAnalysis.avgDailySpending)}
+                    {formatCurrency(spendingAnalysis.avgDailySpending, numbersHidden)}
                   </p>
                 </div>
               </div>
@@ -354,7 +351,7 @@ const Settings = () => {
                           <div className="flex justify-between items-center mb-2">
                             <span className="text-sm text-zinc-300">{category}</span>
                             <span className="text-sm font-semibold text-white">
-                              {formatCurrency(amount)}
+                              {formatCurrency(amount, numbersHidden)}
                             </span>
                           </div>
                           <div className="w-full bg-zinc-800 rounded-full h-2">
@@ -411,7 +408,7 @@ const Settings = () => {
                             transaction.type === 'income' ? 'text-emerald-400' : 'text-red-400'
                           }`}>
                             {transaction.type === 'income' ? '+' : '-'}
-                            {formatCurrency(transaction.amount)}
+                            {formatCurrency(transaction.amount, numbersHidden)}
                           </p>
                           <p className="text-xs text-zinc-500">
                             {transaction.paymentMethod === 'credit' ? 'Credit Card' : 'Bank'}

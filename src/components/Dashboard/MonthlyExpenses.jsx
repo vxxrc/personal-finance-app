@@ -1,7 +1,9 @@
 import { formatCurrency } from '../../services/calculations';
 import { format } from 'date-fns';
+import { useAuth } from '../../contexts/AuthContext';
 
 const MonthlyExpenses = ({ expenses }) => {
+  const { numbersHidden } = useAuth();
   // Get current month and year
   const now = new Date();
   const currentMonth = now.getMonth();
@@ -61,16 +63,16 @@ const MonthlyExpenses = ({ expenses }) => {
         <div className="grid grid-cols-3 gap-2 mb-4">
           <div className="bg-black rounded-lg p-2.5 border border-zinc-800">
             <p className="text-xs text-zinc-400 mb-0.5">Income</p>
-            <p className="text-sm font-semibold text-emerald-500">+{formatCurrency(totalIncome)}</p>
+            <p className="text-sm font-semibold text-emerald-500">{numbersHidden ? '' : '+'}{formatCurrency(totalIncome, numbersHidden)}</p>
           </div>
           <div className="bg-black rounded-lg p-2.5 border border-zinc-800">
             <p className="text-xs text-zinc-400 mb-0.5">Expenses</p>
-            <p className="text-sm font-semibold text-red-500">-{formatCurrency(totalExpenses)}</p>
+            <p className="text-sm font-semibold text-red-500">{numbersHidden ? '' : '-'}{formatCurrency(totalExpenses, numbersHidden)}</p>
           </div>
           <div className="bg-black rounded-lg p-2.5 border border-zinc-800">
             <p className="text-xs text-zinc-400 mb-0.5">Net</p>
             <p className={`text-sm font-semibold ${netAmount >= 0 ? 'text-emerald-500' : 'text-red-500'}`}>
-              {netAmount >= 0 ? '+' : ''}{formatCurrency(netAmount)}
+              {(netAmount >= 0 && !numbersHidden) ? '+' : ''}{formatCurrency(netAmount, numbersHidden)}
             </p>
           </div>
         </div>
@@ -88,7 +90,7 @@ const MonthlyExpenses = ({ expenses }) => {
                 <div key={category}>
                   <div className="flex justify-between items-center mb-1">
                     <span className="text-sm font-medium text-white">{category}</span>
-                    <span className="text-sm font-semibold text-zinc-300">{formatCurrency(amount)}</span>
+                    <span className="text-sm font-semibold text-zinc-300">{formatCurrency(amount, numbersHidden)}</span>
                   </div>
                   <div className="w-full bg-zinc-800 rounded-full h-2">
                     <div

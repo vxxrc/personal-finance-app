@@ -96,9 +96,14 @@ export const groupExpensesByCategory = (expenses) => {
 /**
  * Format currency
  * @param {number} amount - Amount to format
- * @returns {string} Formatted currency string
+ * @param {boolean} hidden - Whether to hide the amount
+ * @returns {string} Formatted currency string or masked string
  */
-export const formatCurrency = (amount) => {
+export const formatCurrency = (amount, hidden = false) => {
+  if (hidden) {
+    return '₹ ••••••';
+  }
+
   return new Intl.NumberFormat('en-IN', {
     style: 'currency',
     currency: 'INR',

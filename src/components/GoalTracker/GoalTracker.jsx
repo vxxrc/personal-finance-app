@@ -1,9 +1,10 @@
 import { Target, Calendar, TrendingUp } from 'lucide-react';
+import { useAuth } from "../../contexts/AuthContext";
 import { formatCurrency, calculateGoalProgress } from '../../services/calculations';
 import { format, differenceInDays } from 'date-fns';
 
 const GoalTracker = ({ goals, netWorth }) => {
-  if (!goals || goals.length === 0) {
+  const { numbersHidden } = useAuth();  if (!goals || goals.length === 0) {
     return (
       <div className="bg-zinc-900 rounded-2xl shadow-lg p-6 mb-6 border border-zinc-800">
         <div className="flex items-center gap-2 mb-4">
@@ -41,7 +42,7 @@ const GoalTracker = ({ goals, netWorth }) => {
                 <div>
                   <h3 className="font-semibold text-white">{goal.name}</h3>
                   <p className="text-sm text-zinc-400">
-                    {formatCurrency(goal.useNetWorth ? netWorth : goal.currentAmount)} / {formatCurrency(goal.targetAmount)}
+                    {formatCurrency(goal.useNetWorth ? netWorth : goal.currentAmount, numbersHidden)} / {formatCurrency(goal.targetAmount, numbersHidden)}
                   </p>
                 </div>
                 <span className={`text-xs px-2 py-1 rounded-full ${

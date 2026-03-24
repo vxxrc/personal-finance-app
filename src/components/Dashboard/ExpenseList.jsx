@@ -1,4 +1,5 @@
 import { Trash2, Edit2, ShoppingBag, Coffee, Car, Home, Zap, TrendingUp, Bitcoin, DollarSign, ArrowUpCircle, ArrowDownCircle } from 'lucide-react';
+import { useAuth } from "../../contexts/AuthContext";
 import { formatCurrency } from '../../services/calculations';
 import { format, isToday, isYesterday, isThisWeek } from 'date-fns';
 
@@ -15,6 +16,8 @@ const CATEGORY_ICONS = {
 };
 
 const ExpenseList = ({ expenses, onDelete, onEdit }) => {
+  const { numbersHidden } = useAuth();
+
   // Sort transactions by date (newest first) and take last 10
   const recentTransactions = [...expenses]
     .sort((a, b) => new Date(b.date) - new Date(a.date))
@@ -65,16 +68,16 @@ const ExpenseList = ({ expenses, onDelete, onEdit }) => {
           <div className="grid grid-cols-3 gap-2 mb-4">
             <div className="bg-black rounded-lg p-2.5 border border-zinc-800">
               <p className="text-xs text-zinc-400 mb-0.5">Today Income</p>
-              <p className="text-sm font-semibold text-emerald-500">+{formatCurrency(todayIncome)}</p>
+              <p className="text-sm font-semibold text-emerald-500">+{formatCurrency(todayIncome, numbersHidden)}</p>
             </div>
             <div className="bg-black rounded-lg p-2.5 border border-zinc-800">
               <p className="text-xs text-zinc-400 mb-0.5">Today Expenses</p>
-              <p className="text-sm font-semibold text-red-500">-{formatCurrency(todayExpenses)}</p>
+              <p className="text-sm font-semibold text-red-500">-{formatCurrency(todayExpenses, numbersHidden)}</p>
             </div>
             <div className="bg-black rounded-lg p-2.5 border border-zinc-800">
               <p className="text-xs text-zinc-400 mb-0.5">Today Net</p>
               <p className={`text-sm font-semibold ${todayNet >= 0 ? 'text-emerald-500' : 'text-red-500'}`}>
-                {todayNet >= 0 ? '+' : ''}{formatCurrency(todayNet)}
+                {todayNet >= 0 ? '+' : ''}{formatCurrency(todayNet, numbersHidden)}
               </p>
             </div>
           </div>
@@ -111,7 +114,7 @@ const ExpenseList = ({ expenses, onDelete, onEdit }) => {
               </div>
               <div className="flex items-center gap-2">
                 <p className={`text-sm font-semibold ${isIncome ? 'text-emerald-500' : 'text-red-500'}`}>
-                  {isIncome ? '+' : '-'}{formatCurrency(transaction.amount)}
+                  {isIncome ? '+' : '-'}{formatCurrency(transaction.amount, numbersHidden)}
                 </p>
                 <button
                   onClick={() => onEdit(transaction)}

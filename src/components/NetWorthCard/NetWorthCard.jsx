@@ -1,7 +1,10 @@
 import { Wallet, TrendingUp, CreditCard, Bitcoin } from 'lucide-react';
 import { formatCurrency } from '../../services/calculations';
+import { useAuth } from '../../contexts/AuthContext';
 
 const NetWorthCard = ({ profile }) => {
+  const { numbersHidden } = useAuth();
+
   if (!profile) return null;
 
   const { bankBalance = 0, stocksValue = 0, cryptoValue = 0, creditCardDue = 0 } = profile;
@@ -20,7 +23,7 @@ const NetWorthCard = ({ profile }) => {
       <div className="text-center mb-6">
         <p className="text-sm text-zinc-400 mb-1">Net Worth</p>
         <h1 className={`text-4xl font-bold ${netWorth >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-          {formatCurrency(netWorth)}
+          {formatCurrency(netWorth, numbersHidden)}
         </h1>
       </div>
 
@@ -33,7 +36,7 @@ const NetWorthCard = ({ profile }) => {
               <span className="text-xs text-zinc-300">{label}</span>
             </div>
             <p className={`text-xl font-semibold ${negative ? 'text-red-600' : 'text-white'}`}>
-              {negative && value > 0 ? '-' : ''}{formatCurrency(value)}
+              {negative && value > 0 && !numbersHidden ? '-' : ''}{formatCurrency(value, numbersHidden)}
             </p>
           </div>
         ))}
