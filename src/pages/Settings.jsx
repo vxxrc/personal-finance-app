@@ -168,7 +168,7 @@ const Settings = () => {
                 : 'bg-zinc-900 text-zinc-300 hover:bg-zinc-800 border border-zinc-800'
             }`}
           >
-            Insights & Analysis
+            Recent Transactions
           </button>
         </div>
       </div>
