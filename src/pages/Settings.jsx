@@ -1,7 +1,10 @@
-import { useState, useEffect } from 'react';
-import { Save, LogOut } from 'lucide-react';
+import { useState, useEffect, useMemo } from 'react';
+import { Save, LogOut, Calendar, TrendingUp, TrendingDown, PieChart } from 'lucide-react';
 import { useProfile } from '../hooks/useProfile';
+import { useExpenses } from '../hooks/useExpenses';
 import { useAuth } from '../contexts/AuthContext';
+import { formatCurrency } from '../services/calculations';
+import { format, startOfWeek, startOfMonth, isAfter } from 'date-fns';
 
 // Move InputField outside to prevent recreation on every render
 const InputField = ({ label, field, value, onChange }) => (
@@ -24,6 +27,7 @@ const InputField = ({ label, field, value, onChange }) => (
 
 const Settings = () => {
   const { profile, updateProfile, loading } = useProfile();
+  const { expenses } = useExpenses();
   const { logout, user } = useAuth();
 
   const [formData, setFormData] = useState({
@@ -35,6 +39,7 @@ const Settings = () => {
   });
 
   const [isSaving, setIsSaving] = useState(false);
+  const [timeFilter, setTimeFilter] = useState('month'); // 'week', 'month', 'all'
 
   // Sync formData with profile when it loads
   useEffect(() => {
@@ -48,6 +53,61 @@ const Settings = () => {
       });
     }
   }, [profile]);
+
+  // Filter transactions by time period
+  const filteredTransactions = useMemo(() => {
+    if (!expenses) return [];
+
+    const now = new Date();
+    let startDate;
+
+    if (timeFilter === 'week') {
+      startDate = startOfWeek(now, { weekStartsOn: 1 }); // Start on Monday
+    } else if (timeFilter === 'month') {
+      startDate = startOfMonth(now);
+    } else {
+      return expenses; // All transactions
+    }
+
+    return expenses.filter(expense =>
+      isAfter(new Date(expense.date), startDate)
+    );
+  }, [expenses, timeFilter]);
+
+  // Calculate spending analysis
+  const spendingAnalysis = useMemo(() => {
+    const expenseTransactions = filteredTransactions.filter(t => t.type === 'expense');
+    const incomeTransactions = filteredTransactions.filter(t => t.type === 'income');
+
+    // Total spending by category
+    const categoryTotals = {};
+    expenseTransactions.forEach(expense => {
+      const category = expense.category || 'Other';
+      categoryTotals[category] = (categoryTotals[category] || 0) + expense.amount;
+    });
+
+    // Sort categories by spending
+    const topCategories = Object.entries(categoryTotals)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 5);
+
+    // Calculate totals
+    const totalExpenses = expenseTransactions.reduce((sum, exp) => sum + exp.amount, 0);
+    const totalIncome = incomeTransactions.reduce((sum, exp) => sum + exp.amount, 0);
+
+    // Average daily spending
+    const daysInPeriod = timeFilter === 'week' ? 7 : timeFilter === 'month' ? 30 : 365;
+    const avgDailySpending = totalExpenses / daysInPeriod;
+
+    return {
+      topCategories,
+      totalExpenses,
+      totalIncome,
+      avgDailySpending,
+      netCashFlow: totalIncome - totalExpenses,
+      transactionCount: filteredTransactions.length,
+    };
+  }, [filteredTransactions, timeFilter]);
 
   const handleChange = (field, value) => {
     setFormData(prev => ({
@@ -82,7 +142,7 @@ const Settings = () => {
       <div className="bg-zinc-900 border-b border-zinc-800 pt-[calc(1.5rem+env(safe-area-inset-top))] pb-6 px-6">
         <div className="max-w-2xl mx-auto">
           <h1 className="text-xl font-semibold text-white">Settings</h1>
-          <p className="text-sm text-zinc-400 mt-1">Manage your account</p>
+          <p className="text-sm text-zinc-400 mt-1">Manage your account & view insights</p>
         </div>
       </div>
 
@@ -136,6 +196,179 @@ const Settings = () => {
             <Save className="w-4 h-4" />
             {isSaving ? 'Saving...' : 'Save Changes'}
           </button>
+        </div>
+
+        {/* Spending Analysis */}
+        <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-6">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-base font-semibold text-white">
+              Spending Analysis
+            </h2>
+            <Calendar className="w-5 h-5 text-zinc-400" />
+          </div>
+
+          {/* Time Filter */}
+          <div className="flex gap-2 mb-6">
+            <button
+              onClick={() => setTimeFilter('week')}
+              className={`flex-1 py-2 text-sm rounded-lg font-medium transition-colors ${
+                timeFilter === 'week'
+                  ? 'bg-emerald-600 text-white'
+                  : 'bg-zinc-800 text-zinc-300 hover:bg-zinc-700'
+              }`}
+            >
+              This Week
+            </button>
+            <button
+              onClick={() => setTimeFilter('month')}
+              className={`flex-1 py-2 text-sm rounded-lg font-medium transition-colors ${
+                timeFilter === 'month'
+                  ? 'bg-emerald-600 text-white'
+                  : 'bg-zinc-800 text-zinc-300 hover:bg-zinc-700'
+              }`}
+            >
+              This Month
+            </button>
+            <button
+              onClick={() => setTimeFilter('all')}
+              className={`flex-1 py-2 text-sm rounded-lg font-medium transition-colors ${
+                timeFilter === 'all'
+                  ? 'bg-emerald-600 text-white'
+                  : 'bg-zinc-800 text-zinc-300 hover:bg-zinc-700'
+              }`}
+            >
+              All Time
+            </button>
+          </div>
+
+          {/* Summary Cards */}
+          <div className="grid grid-cols-2 gap-3 mb-6">
+            <div className="bg-black border border-zinc-800 rounded-lg p-4">
+              <div className="flex items-center gap-2 mb-2">
+                <TrendingDown className="w-4 h-4 text-red-400" />
+                <p className="text-xs text-zinc-400">Total Expenses</p>
+              </div>
+              <p className="text-lg font-semibold text-white">
+                {formatCurrency(spendingAnalysis.totalExpenses)}
+              </p>
+            </div>
+            <div className="bg-black border border-zinc-800 rounded-lg p-4">
+              <div className="flex items-center gap-2 mb-2">
+                <TrendingUp className="w-4 h-4 text-emerald-400" />
+                <p className="text-xs text-zinc-400">Total Income</p>
+              </div>
+              <p className="text-lg font-semibold text-white">
+                {formatCurrency(spendingAnalysis.totalIncome)}
+              </p>
+            </div>
+          </div>
+
+          {/* Net Cash Flow */}
+          <div className="bg-black border border-zinc-800 rounded-lg p-4 mb-6">
+            <div className="flex justify-between items-center">
+              <p className="text-sm text-zinc-400">Net Cash Flow</p>
+              <p className={`text-lg font-semibold ${
+                spendingAnalysis.netCashFlow >= 0 ? 'text-emerald-400' : 'text-red-400'
+              }`}>
+                {spendingAnalysis.netCashFlow >= 0 ? '+' : ''}
+                {formatCurrency(Math.abs(spendingAnalysis.netCashFlow))}
+              </p>
+            </div>
+          </div>
+
+          {/* Average Daily Spending */}
+          <div className="bg-black border border-zinc-800 rounded-lg p-4 mb-6">
+            <div className="flex justify-between items-center">
+              <p className="text-sm text-zinc-400">Average Daily Spending</p>
+              <p className="text-lg font-semibold text-white">
+                {formatCurrency(spendingAnalysis.avgDailySpending)}
+              </p>
+            </div>
+          </div>
+
+          {/* Top Spending Categories */}
+          {spendingAnalysis.topCategories.length > 0 && (
+            <div>
+              <div className="flex items-center gap-2 mb-4">
+                <PieChart className="w-4 h-4 text-zinc-400" />
+                <h3 className="text-sm font-semibold text-white">Top Spending Categories</h3>
+              </div>
+              <div className="space-y-3">
+                {spendingAnalysis.topCategories.map(([category, amount], index) => {
+                  const percentage = (amount / spendingAnalysis.totalExpenses) * 100;
+                  return (
+                    <div key={category}>
+                      <div className="flex justify-between items-center mb-2">
+                        <span className="text-sm text-zinc-300">{category}</span>
+                        <span className="text-sm font-semibold text-white">
+                          {formatCurrency(amount)}
+                        </span>
+                      </div>
+                      <div className="w-full bg-zinc-800 rounded-full h-2">
+                        <div
+                          className="bg-emerald-600 h-full rounded-full transition-all"
+                          style={{ width: `${percentage}%` }}
+                        />
+                      </div>
+                      <p className="text-xs text-zinc-500 mt-1 text-right">
+                        {percentage.toFixed(1)}% of total
+                      </p>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Recent Transactions */}
+        <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-6">
+          <h2 className="text-base font-semibold text-white mb-4">
+            Recent Transactions
+          </h2>
+
+          {filteredTransactions.length === 0 ? (
+            <p className="text-sm text-zinc-400 text-center py-8">
+              No transactions for this period
+            </p>
+          ) : (
+            <div className="space-y-2">
+              <p className="text-xs text-zinc-500 mb-3">
+                Showing {filteredTransactions.length} transaction{filteredTransactions.length !== 1 ? 's' : ''}
+              </p>
+              <div className="space-y-2 max-h-96 overflow-y-auto">
+                {filteredTransactions.map((transaction) => (
+                  <div
+                    key={transaction.id}
+                    className="flex justify-between items-center p-3 bg-black border border-zinc-800 rounded-lg hover:border-zinc-700 transition-colors"
+                  >
+                    <div>
+                      <p className="text-sm font-medium text-white">
+                        {transaction.subCategory || transaction.category}
+                      </p>
+                      <p className="text-xs text-zinc-500">
+                        {format(new Date(transaction.date), 'MMM dd, yyyy • h:mm a')}
+                      </p>
+                      {transaction.note && (
+                        <p className="text-xs text-zinc-400 mt-1">{transaction.note}</p>
+                      )}
+                    </div>
+                    <div className="text-right">
+                      <p className={`text-sm font-semibold ${
+                        transaction.type === 'income' ? 'text-emerald-400' : 'text-red-400'
+                      }`}>
+                        {transaction.type === 'income' ? '+' : '-'}
+                        {formatCurrency(transaction.amount)}
+                      </p>
+                      <p className="text-xs text-zinc-500">
+                        {transaction.paymentMethod === 'credit' ? 'Credit Card' : 'Bank'}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Account Section */}
