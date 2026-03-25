@@ -7,7 +7,7 @@ import { formatCurrency } from '../services/calculations';
 import { format, startOfWeek, startOfMonth, isAfter } from 'date-fns';
 
 // Move InputField outside to prevent recreation on every render
-const InputField = ({ label, field, value, onChange }) => (
+const InputField = ({ label, field, value, onChange, hidden }) => (
   <div>
     <label className="block text-sm font-medium text-zinc-300 mb-2">
       {label}
@@ -15,11 +15,13 @@ const InputField = ({ label, field, value, onChange }) => (
     <div className="relative">
       <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm text-zinc-500">₹</span>
       <input
-        type="number"
+        type={hidden ? "text" : "number"}
         step="0.01"
-        value={value}
+        value={hidden ? "••••••" : value}
         onChange={onChange}
-        className="w-full pl-10 pr-4 py-3 bg-black border border-zinc-700 rounded-lg text-white focus:outline-none focus:border-emerald-600"
+        readOnly={hidden}
+        className="w-full pl-10 pr-4 py-3 bg-black border border-zinc-700 rounded-lg text-white focus:outline-none focus:border-emerald-600 disabled:opacity-50"
+        title={hidden ? "Disable privacy mode to edit" : ""}
       />
     </div>
   </div>
@@ -189,38 +191,52 @@ const Settings = () => {
                   field="bankBalance"
                   value={formData.bankBalance}
                   onChange={(e) => handleChange('bankBalance', e.target.value)}
+                  hidden={numbersHidden}
                 />
                 <InputField
                   label="Stocks Value"
                   field="stocksValue"
                   value={formData.stocksValue}
                   onChange={(e) => handleChange('stocksValue', e.target.value)}
+                  hidden={numbersHidden}
                 />
                 <InputField
                   label="Crypto Value"
                   field="cryptoValue"
                   value={formData.cryptoValue}
                   onChange={(e) => handleChange('cryptoValue', e.target.value)}
+                  hidden={numbersHidden}
                 />
                 <InputField
                   label="Credit Card Due"
                   field="creditCardDue"
                   value={formData.creditCardDue}
                   onChange={(e) => handleChange('creditCardDue', e.target.value)}
+                  hidden={numbersHidden}
                 />
                 <InputField
                   label="Monthly Salary"
                   field="monthlySalary"
                   value={formData.monthlySalary}
                   onChange={(e) => handleChange('monthlySalary', e.target.value)}
+                  hidden={numbersHidden}
                 />
               </div>
+
+              {/* Privacy Mode Notice */}
+              {numbersHidden && (
+                <div className="mt-4 p-3 bg-red-900/20 border border-red-800 rounded-lg">
+                  <p className="text-xs text-red-400">
+                    Privacy mode is active. Disable it to edit account settings.
+                  </p>
+                </div>
+              )}
 
               {/* Save Button */}
               <button
                 onClick={handleSave}
-                disabled={isSaving}
-                className="w-full mt-6 py-3 bg-emerald-600 hover:bg-emerald-700 disabled:bg-zinc-700 text-white font-medium rounded-lg transition-colors flex items-center justify-center gap-2"
+                disabled={isSaving || numbersHidden}
+                className="w-full mt-6 py-3 bg-emerald-600 hover:bg-emerald-700 disabled:bg-zinc-700 disabled:cursor-not-allowed text-white font-medium rounded-lg transition-colors flex items-center justify-center gap-2"
               >
                 <Save className="w-4 h-4" />
                 {isSaving ? 'Saving...' : 'Save Changes'}
