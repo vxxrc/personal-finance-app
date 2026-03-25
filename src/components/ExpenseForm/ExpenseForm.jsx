@@ -49,6 +49,36 @@ const ExpenseForm = ({ isOpen, onClose, onSubmit, editingExpense = null }) => {
     }
   }, [editingExpense, isOpen]);
 
+  // Lock body scroll when modal is open
+  useEffect(() => {
+    if (isOpen) {
+      // Save current scroll position
+      const scrollY = window.scrollY;
+      document.body.style.position = 'fixed';
+      document.body.style.top = `-${scrollY}px`;
+      document.body.style.width = '100%';
+      document.body.style.overflow = 'hidden';
+    } else {
+      // Restore scroll position
+      const scrollY = document.body.style.top;
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.width = '';
+      document.body.style.overflow = '';
+      if (scrollY) {
+        window.scrollTo(0, parseInt(scrollY || '0') * -1);
+      }
+    }
+
+    return () => {
+      // Cleanup on unmount
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.width = '';
+      document.body.style.overflow = '';
+    };
+  }, [isOpen]);
+
   // Initialize speech recognition
   useEffect(() => {
     if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
@@ -157,9 +187,20 @@ const ExpenseForm = ({ isOpen, onClose, onSubmit, editingExpense = null }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-75 z-50 overflow-y-auto">
+    <div
+      className="fixed inset-0 bg-black bg-opacity-75 z-50 overflow-y-auto"
+      onClick={(e) => {
+        // Close modal if clicking on backdrop
+        if (e.target === e.currentTarget) {
+          onClose();
+        }
+      }}
+    >
       <div className="min-h-full flex items-start justify-center p-4 py-8">
-        <div className="bg-zinc-900 w-full max-w-md rounded-2xl shadow-2xl border border-zinc-800 my-auto">
+        <div
+          className="bg-zinc-900 w-full max-w-md rounded-2xl shadow-2xl border border-zinc-800 my-auto"
+          onClick={(e) => e.stopPropagation()}
+        >
         {/* Header */}
         <div className="flex justify-between items-center p-6 border-b border-zinc-700 sticky top-0 bg-zinc-900 z-10">
           <h2 className="text-xl font-semibold text-white">{editingExpense ? 'Edit Transaction' : 'Add Transaction'}</h2>
