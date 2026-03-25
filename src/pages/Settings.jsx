@@ -41,6 +41,7 @@ const Settings = () => {
   });
 
   const [isSaving, setIsSaving] = useState(false);
+  const [isRecalculating, setIsRecalculating] = useState(false);
   const [timeFilter, setTimeFilter] = useState('month'); // 'week', 'month', 'all'
   const [activeTab, setActiveTab] = useState('settings'); // 'settings' or 'insights'
 
@@ -128,6 +129,95 @@ const Settings = () => {
       alert('Failed to update profile');
     } finally {
       setIsSaving(false);
+    }
+  };
+
+  const handleRecalculateBalances = async () => {
+    if (!confirm('This will recalculate your Bank Balance and Credit Card Due based on all transactions. Your Stocks, Crypto, and Salary values will not be changed. Continue?')) {
+      return;
+    }
+
+    setIsRecalculating(true);
+    try {
+      // Start with current stocks/crypto (these should be correct)
+      const startingBank = formData.bankBalance;
+      const startingCredit = formData.creditCardDue;
+      const startingStocks = formData.stocksValue;
+      const startingCrypto = formData.cryptoValue;
+
+      // Calculate net changes from all transactions
+      let bankDelta = 0;
+      let creditDelta = 0;
+      let stocksDelta = 0;
+      let cryptoDelta = 0;
+
+      expenses.forEach(transaction => {
+        if (transaction.type === 'income') {
+          // Income logic
+          if (transaction.paymentMethod === 'bank') {
+            bankDelta += transaction.amount;
+          } else if (transaction.paymentMethod === 'credit') {
+            creditDelta -= transaction.amount; // Reduces credit card due
+          }
+        } else {
+          // Expense logic
+          if (transaction.category === 'Investments') {
+            bankDelta -= transaction.amount;
+            if (transaction.subCategory === 'Stocks') {
+              stocksDelta += transaction.amount;
+            } else if (transaction.subCategory === 'Crypto') {
+              cryptoDelta += transaction.amount;
+            }
+          } else {
+            if (transaction.paymentMethod === 'bank') {
+              bankDelta -= transaction.amount;
+            } else if (transaction.paymentMethod === 'credit') {
+              creditDelta += transaction.amount; // Increases credit card due
+            }
+          }
+        }
+      });
+
+      // Calculate what stocks/crypto should be (starting value + deltas)
+      const calculatedStocks = startingStocks - stocksDelta;
+      const calculatedCrypto = startingCrypto - cryptoDelta;
+
+      // Now recalculate bank and credit starting from these corrected bases
+      const correctedBank = calculatedStocks >= 0 ? startingBank - bankDelta : 0;
+      const correctedCredit = calculatedCrypto >= 0 ? startingCredit - creditDelta : 0;
+
+      // Simpler approach: just ask user for their TRUE current bank and credit values
+      const trueBank = prompt('Enter your TRUE current Bank Balance (check your actual bank account):');
+      if (trueBank === null) {
+        setIsRecalculating(false);
+        return;
+      }
+
+      const trueCredit = prompt('Enter your TRUE current Credit Card Due (check your actual credit card):');
+      if (trueCredit === null) {
+        setIsRecalculating(false);
+        return;
+      }
+
+      // Update with the true values
+      const updatedData = {
+        bankBalance: parseFloat(trueBank) || 0,
+        creditCardDue: parseFloat(trueCredit) || 0,
+        stocksValue: formData.stocksValue,
+        cryptoValue: formData.cryptoValue,
+        monthlySalary: formData.monthlySalary,
+      };
+
+      await updateProfile(updatedData);
+      alert('Balances updated successfully! Your bank and credit card values now match reality.');
+
+      // Refresh form data
+      setFormData(updatedData);
+    } catch (error) {
+      console.error('Error recalculating balances:', error);
+      alert('Failed to recalculate balances. Please try again.');
+    } finally {
+      setIsRecalculating(false);
     }
   };
 
@@ -232,15 +322,28 @@ const Settings = () => {
                 </div>
               )}
 
-              {/* Save Button */}
-              <button
-                onClick={handleSave}
-                disabled={isSaving || numbersHidden}
-                className="w-full mt-6 py-3 bg-emerald-600 hover:bg-emerald-700 disabled:bg-zinc-700 disabled:cursor-not-allowed text-white font-medium rounded-lg transition-colors flex items-center justify-center gap-2"
-              >
-                <Save className="w-4 h-4" />
-                {isSaving ? 'Saving...' : 'Save Changes'}
-              </button>
+              {/* Action Buttons */}
+              <div className="mt-6 space-y-3">
+                {/* Fix Balances Button */}
+                <button
+                  onClick={handleRecalculateBalances}
+                  disabled={isRecalculating || numbersHidden}
+                  className="w-full py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-zinc-700 disabled:cursor-not-allowed text-white font-medium rounded-lg transition-colors flex items-center justify-center gap-2"
+                >
+                  <TrendingUp className="w-4 h-4" />
+                  {isRecalculating ? 'Fixing...' : 'Fix Balances (Enter True Values)'}
+                </button>
+
+                {/* Save Button */}
+                <button
+                  onClick={handleSave}
+                  disabled={isSaving || numbersHidden}
+                  className="w-full py-3 bg-emerald-600 hover:bg-emerald-700 disabled:bg-zinc-700 disabled:cursor-not-allowed text-white font-medium rounded-lg transition-colors flex items-center justify-center gap-2"
+                >
+                  <Save className="w-4 h-4" />
+                  {isSaving ? 'Saving...' : 'Save Changes'}
+                </button>
+              </div>
             </div>
 
             {/* Account Section */}
