@@ -85,7 +85,13 @@ const Dashboard = () => {
 
     // Handle INCOME
     if (expenseData.type === 'income') {
-      updates.bankBalance = (profile.bankBalance || 0) + expenseData.amount;
+      // Check payment method for income too
+      if (expenseData.paymentMethod === 'bank') {
+        updates.bankBalance = (profile.bankBalance || 0) + expenseData.amount;
+      } else if (expenseData.paymentMethod === 'credit') {
+        // Income to credit card reduces the amount due
+        updates.creditCardDue = (profile.creditCardDue || 0) - expenseData.amount;
+      }
     }
     // Handle EXPENSE
     else {
@@ -121,11 +127,17 @@ const Dashboard = () => {
 
     const updates = {};
 
-    // Handle INCOME deletion
+    // Handle INCOME deletion/reversal
     if (expense.type === 'income') {
-      updates.bankBalance = (profile.bankBalance || 0) - expense.amount;
+      // Check payment method for income reversal too
+      if (expense.paymentMethod === 'bank') {
+        updates.bankBalance = (profile.bankBalance || 0) - expense.amount;
+      } else if (expense.paymentMethod === 'credit') {
+        // Reversing income from credit card increases the amount due
+        updates.creditCardDue = (profile.creditCardDue || 0) + expense.amount;
+      }
     }
-    // Handle EXPENSE deletion
+    // Handle EXPENSE deletion/reversal
     else {
       // Reverse investment updates (add back to bank, remove from stocks/crypto)
       if (expense.category === 'Investments') {
