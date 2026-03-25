@@ -103,7 +103,10 @@ const ExpenseList = ({ expenses, onDelete, onEdit }) => {
                     {transaction.subCategory}
                   </p>
                   {transaction.note && (
-                    <p className="text-xs text-zinc-400 truncate">
+                    <p
+                      className="text-xs text-zinc-400 line-clamp-2 break-words"
+                      title={transaction.note}
+                    >
                       {transaction.note}
                     </p>
                   )}

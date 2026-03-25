@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Plus } from 'lucide-react';
+import { useState, useMemo } from 'react';
+import { Plus, ChevronDown, ChevronUp, Wallet, TrendingDown, Target, Receipt } from 'lucide-react';
 import NetWorthCard from '../NetWorthCard/NetWorthCard';
 import GoalTracker from '../GoalTracker/GoalTracker';
 import ExpenseForm from '../ExpenseForm/ExpenseForm';
@@ -8,17 +8,48 @@ import MonthlyExpenses from './MonthlyExpenses';
 import { useProfile } from '../../hooks/useProfile';
 import { useExpenses } from '../../hooks/useExpenses';
 import { useGoals } from '../../hooks/useGoals';
-import { calculateNetWorth } from '../../services/calculations';
+import { calculateNetWorth, formatCurrency } from '../../services/calculations';
+import { useAuth } from '../../contexts/AuthContext';
 
 const Dashboard = () => {
   const [isExpenseFormOpen, setIsExpenseFormOpen] = useState(false);
   const [editingExpense, setEditingExpense] = useState(null);
+  const [expandedSection, setExpandedSection] = useState(null);
 
   const { profile, updateProfile, refreshProfile } = useProfile();
   const { expenses, addExpense, updateExpense, deleteExpense } = useExpenses();
   const { goals } = useGoals();
+  const { numbersHidden } = useAuth();
 
   const netWorth = calculateNetWorth(profile);
+
+  // Calculate monthly summary
+  const monthlySummary = useMemo(() => {
+    if (!expenses) return { income: 0, expense: 0 };
+
+    const now = new Date();
+    const currentMonth = now.getMonth();
+    const currentYear = now.getFullYear();
+
+    const monthlyExpenses = expenses.filter(exp => {
+      const expDate = new Date(exp.date);
+      return expDate.getMonth() === currentMonth && expDate.getFullYear() === currentYear;
+    });
+
+    const income = monthlyExpenses
+      .filter(exp => exp.type === 'income')
+      .reduce((sum, exp) => sum + exp.amount, 0);
+
+    const expense = monthlyExpenses
+      .filter(exp => exp.type === 'expense')
+      .reduce((sum, exp) => sum + exp.amount, 0);
+
+    return { income, expense };
+  }, [expenses]);
+
+  const toggleSection = (section) => {
+    setExpandedSection(expandedSection === section ? null : section);
+  };
 
   const handleAddExpense = async (expenseData) => {
     try {
@@ -160,26 +191,147 @@ const Dashboard = () => {
 
       {/* Content */}
       <div className="max-w-7xl mx-auto px-4 md:px-6 mt-6">
-        {/* Desktop Grid Layout */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-          {/* Net Worth - Full width on mobile, spans 2 cols on lg */}
-          <div className="md:col-span-2 lg:col-span-2">
-            <NetWorthCard profile={profile} />
+        {/* Summary Boxes Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mb-6">
+          {/* Net Worth Box */}
+          <div
+            onClick={() => toggleSection('networth')}
+            className={`bg-zinc-900 rounded-2xl border border-zinc-800 p-6 cursor-pointer transition-all hover:border-emerald-600 ${
+              expandedSection === 'networth' ? 'md:col-span-2' : ''
+            }`}
+          >
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-emerald-600/20 rounded-lg">
+                  <Wallet className="w-5 h-5 text-emerald-600" />
+                </div>
+                <h3 className="text-lg font-semibold text-white">Net Worth</h3>
+              </div>
+              {expandedSection === 'networth' ? (
+                <ChevronUp className="w-5 h-5 text-zinc-400" />
+              ) : (
+                <ChevronDown className="w-5 h-5 text-zinc-400" />
+              )}
+            </div>
+            {expandedSection === 'networth' ? (
+              <div onClick={(e) => e.stopPropagation()}>
+                <NetWorthCard profile={profile} />
+              </div>
+            ) : (
+              <div className="text-3xl font-bold text-emerald-600">
+                {formatCurrency(netWorth, numbersHidden)}
+              </div>
+            )}
           </div>
 
-          {/* Monthly Expenses */}
-          <div className="md:col-span-2 lg:col-span-1">
-            <MonthlyExpenses expenses={expenses} />
+          {/* Monthly Summary Box */}
+          <div
+            onClick={() => toggleSection('monthly')}
+            className={`bg-zinc-900 rounded-2xl border border-zinc-800 p-6 cursor-pointer transition-all hover:border-emerald-600 ${
+              expandedSection === 'monthly' ? 'md:col-span-2' : ''
+            }`}
+          >
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-blue-600/20 rounded-lg">
+                  <TrendingDown className="w-5 h-5 text-blue-600" />
+                </div>
+                <h3 className="text-lg font-semibold text-white">Monthly Summary</h3>
+              </div>
+              {expandedSection === 'monthly' ? (
+                <ChevronUp className="w-5 h-5 text-zinc-400" />
+              ) : (
+                <ChevronDown className="w-5 h-5 text-zinc-400" />
+              )}
+            </div>
+            {expandedSection === 'monthly' ? (
+              <div onClick={(e) => e.stopPropagation()}>
+                <MonthlyExpenses expenses={expenses} />
+              </div>
+            ) : (
+              <div className="space-y-2">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-zinc-400">Income</span>
+                  <span className="text-lg font-semibold text-emerald-600">
+                    {formatCurrency(monthlySummary.income, numbersHidden)}
+                  </span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-zinc-400">Expenses</span>
+                  <span className="text-lg font-semibold text-red-600">
+                    {formatCurrency(monthlySummary.expense, numbersHidden)}
+                  </span>
+                </div>
+              </div>
+            )}
           </div>
 
-          {/* Goal Tracker - Full width */}
-          <div className="md:col-span-2 lg:col-span-3">
-            <GoalTracker goals={goals} netWorth={netWorth} />
+          {/* Goals Box */}
+          <div
+            onClick={() => toggleSection('goals')}
+            className={`bg-zinc-900 rounded-2xl border border-zinc-800 p-6 cursor-pointer transition-all hover:border-emerald-600 ${
+              expandedSection === 'goals' ? 'md:col-span-2' : ''
+            }`}
+          >
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-purple-600/20 rounded-lg">
+                  <Target className="w-5 h-5 text-purple-600" />
+                </div>
+                <h3 className="text-lg font-semibold text-white">Goals</h3>
+              </div>
+              {expandedSection === 'goals' ? (
+                <ChevronUp className="w-5 h-5 text-zinc-400" />
+              ) : (
+                <ChevronDown className="w-5 h-5 text-zinc-400" />
+              )}
+            </div>
+            {expandedSection === 'goals' ? (
+              <div onClick={(e) => e.stopPropagation()}>
+                <GoalTracker goals={goals} netWorth={netWorth} />
+              </div>
+            ) : (
+              <div className="space-y-2">
+                <div className="text-3xl font-bold text-purple-600">
+                  {goals?.length || 0}
+                </div>
+                <div className="text-sm text-zinc-400">Active Goals</div>
+              </div>
+            )}
           </div>
 
-          {/* Expense List - Full width */}
-          <div className="md:col-span-2 lg:col-span-3">
-            <ExpenseList expenses={expenses} onDelete={handleDeleteExpense} onEdit={handleEditExpense} />
+          {/* Transactions Box */}
+          <div
+            onClick={() => toggleSection('transactions')}
+            className={`bg-zinc-900 rounded-2xl border border-zinc-800 p-6 cursor-pointer transition-all hover:border-emerald-600 ${
+              expandedSection === 'transactions' ? 'md:col-span-2' : ''
+            }`}
+          >
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-orange-600/20 rounded-lg">
+                  <Receipt className="w-5 h-5 text-orange-600" />
+                </div>
+                <h3 className="text-lg font-semibold text-white">Recent Transactions</h3>
+              </div>
+              {expandedSection === 'transactions' ? (
+                <ChevronUp className="w-5 h-5 text-zinc-400" />
+              ) : (
+                <ChevronDown className="w-5 h-5 text-zinc-400" />
+              )}
+            </div>
+            {expandedSection === 'transactions' ? (
+              <div onClick={(e) => e.stopPropagation()}>
+                <ExpenseList expenses={expenses} onDelete={handleDeleteExpense} onEdit={handleEditExpense} />
+              </div>
+            ) : (
+              <div className="space-y-2">
+                <div className="text-3xl font-bold text-orange-600">
+                  {expenses?.length || 0}
+                </div>
+                <div className="text-sm text-zinc-400">Total Transactions</div>
+              </div>
+            )}
           </div>
         </div>
       </div>
