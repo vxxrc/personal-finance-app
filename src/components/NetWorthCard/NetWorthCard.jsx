@@ -36,10 +36,17 @@ const NetWorthCard = ({ profile }) => {
               <span className="text-xs text-zinc-300">{label}</span>
             </div>
             <p className={`text-xl font-semibold ${negative ? 'text-red-600' : 'text-white'}`}>
-              {negative && value > 0 && !numbersHidden ? '-' : ''}{formatCurrency(value, numbersHidden)}
+              {formatCurrency(value, numbersHidden)}
             </p>
           </div>
         ))}
+      </div>
+
+      {/* Calculation Helper */}
+      <div className="mt-4 p-3 bg-black/50 rounded-lg border border-zinc-800">
+        <p className="text-xs text-zinc-400 text-center">
+          Net Worth = Bank + Stocks + Crypto - Credit Due
+        </p>
       </div>
     </div>
   );
