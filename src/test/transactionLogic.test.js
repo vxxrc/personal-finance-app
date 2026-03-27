@@ -366,3 +366,123 @@ describe('Net Worth Invariants', () => {
     expect(netWorthAfterCredit).toBe(initialNetWorth - 1000);
   });
 });
+
+describe('Edit Amount Scenarios', () => {
+  it('should correctly edit credit card expense amount without adding extra', () => {
+    let profile = {
+      bankBalance: 10000,
+      stocksValue: 5000,
+      cryptoValue: 2000,
+      creditCardDue: 3000,
+    };
+
+    // Original transaction: 500 on credit card
+    const oldTransaction = {
+      type: 'expense',
+      amount: 500,
+      paymentMethod: 'credit',
+      category: 'Daily',
+      subCategory: 'Dining',
+    };
+
+    // Apply original
+    profile = applyTransactionEffect(oldTransaction, profile);
+    expect(profile.creditCardDue).toBe(3500); // 3000 + 500
+
+    // Now EDIT to 1000 instead of 500
+    const newTransaction = {
+      type: 'expense',
+      amount: 1000, // Changed from 500 to 1000
+      paymentMethod: 'credit',
+      category: 'Daily',
+      subCategory: 'Dining',
+    };
+
+    // Reverse old
+    profile = reverseTransactionEffect(oldTransaction, profile);
+    expect(profile.creditCardDue).toBe(3000); // Back to original
+
+    // Apply new
+    profile = applyTransactionEffect(newTransaction, profile);
+    expect(profile.creditCardDue).toBe(4000); // 3000 + 1000
+    expect(profile.bankBalance).toBe(10000); // Unchanged
+
+    // Net worth should be reduced by 1000 total (the new amount)
+    const netWorth = profile.bankBalance + profile.stocksValue + profile.cryptoValue - profile.creditCardDue;
+    expect(netWorth).toBe(13000); // 10000 + 5000 + 2000 - 4000
+  });
+
+  it('should correctly edit bank expense amount without adding extra', () => {
+    let profile = {
+      bankBalance: 10000,
+      stocksValue: 5000,
+      cryptoValue: 2000,
+      creditCardDue: 3000,
+    };
+
+    // Original transaction: 500 from bank
+    const oldTransaction = {
+      type: 'expense',
+      amount: 500,
+      paymentMethod: 'bank',
+      category: 'Daily',
+    };
+
+    // Apply original
+    profile = applyTransactionEffect(oldTransaction, profile);
+    expect(profile.bankBalance).toBe(9500); // 10000 - 500
+
+    // Edit to 1000
+    const newTransaction = {
+      type: 'expense',
+      amount: 1000,
+      paymentMethod: 'bank',
+      category: 'Daily',
+    };
+
+    // Reverse old, apply new
+    profile = reverseTransactionEffect(oldTransaction, profile);
+    expect(profile.bankBalance).toBe(10000); // Back to original
+
+    profile = applyTransactionEffect(newTransaction, profile);
+    expect(profile.bankBalance).toBe(9000); // 10000 - 1000
+
+    const netWorth = profile.bankBalance + profile.stocksValue + profile.cryptoValue - profile.creditCardDue;
+    expect(netWorth).toBe(13000); // 9000 + 5000 + 2000 - 3000
+  });
+
+  it('should correctly edit credit card income amount', () => {
+    let profile = {
+      bankBalance: 10000,
+      stocksValue: 5000,
+      cryptoValue: 2000,
+      creditCardDue: 3000,
+    };
+
+    // Original: 1000 income to credit card
+    const oldTransaction = {
+      type: 'income',
+      amount: 1000,
+      paymentMethod: 'credit',
+    };
+
+    profile = applyTransactionEffect(oldTransaction, profile);
+    expect(profile.creditCardDue).toBe(2000); // 3000 - 1000
+
+    // Edit to 2000
+    const newTransaction = {
+      type: 'income',
+      amount: 2000,
+      paymentMethod: 'credit',
+    };
+
+    profile = reverseTransactionEffect(oldTransaction, profile);
+    expect(profile.creditCardDue).toBe(3000); // Back to original
+
+    profile = applyTransactionEffect(newTransaction, profile);
+    expect(profile.creditCardDue).toBe(1000); // 3000 - 2000
+
+    const netWorth = profile.bankBalance + profile.stocksValue + profile.cryptoValue - profile.creditCardDue;
+    expect(netWorth).toBe(16000); // 10000 + 5000 + 2000 - 1000
+  });
+});
