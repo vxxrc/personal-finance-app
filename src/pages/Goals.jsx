@@ -7,7 +7,8 @@ import { calculateNetWorth, calculateGoalProgress, calculateMonthlySavingsNeeded
 import { format } from 'date-fns';
 
 const Goals = () => {
-  const { numbersHidden } = useAuth();  const { goals, addGoal, updateGoal, deleteGoal } = useGoals();
+  const { numbersHidden } = useAuth();
+  const { goals, addGoal, updateGoal, deleteGoal } = useGoals();
   const { profile } = useProfile();
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingGoal, setEditingGoal] = useState(null);
@@ -24,7 +25,7 @@ const Goals = () => {
   });
 
   const handleEdit = (goal) => {
-  const { numbersHidden } = useAuth();    setEditingGoal(goal);
+    setEditingGoal(goal);
     setFormData({
       name: goal.name,
       targetAmount: goal.targetAmount.toString(),
@@ -37,7 +38,7 @@ const Goals = () => {
   };
 
   const handleSubmit = async (e) => {
-  const { numbersHidden } = useAuth();    e.preventDefault();
+    e.preventDefault();
     try {
       if (editingGoal) {
         // Update existing goal
@@ -77,7 +78,7 @@ const Goals = () => {
   };
 
   const handleCancelEdit = () => {
-  const { numbersHidden } = useAuth();    setFormData({
+    setFormData({
       name: '',
       targetAmount: '',
       targetDate: '',
@@ -90,7 +91,7 @@ const Goals = () => {
   };
 
   const handleDelete = async (goalId) => {
-  const { numbersHidden } = useAuth();    if (!confirm('Delete this goal?')) return;
+    if (!confirm('Delete this goal?')) return;
     try {
       await deleteGoal(goalId);
     } catch (error) {
