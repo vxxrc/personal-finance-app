@@ -162,16 +162,22 @@ const ExpenseForm = ({ isOpen, onClose, onSubmit, editingExpense = null }) => {
       setIsSubmitting(true);
 
       // Wait for submission to complete before resetting form
-      await onSubmit({
+      const expenseData = {
         amount: parseFloat(amount),
         type,
         category: type === 'expense' ? category : 'Income',
         subCategory: type === 'expense' ? subCategory : (note || 'Salary'),
         note,
         paymentMethod,
-        investmentAction: category === 'Investments' ? investmentAction : undefined,
         date: new Date().toISOString()
-      });
+      };
+
+      // Only add investmentAction for investment transactions
+      if (category === 'Investments') {
+        expenseData.investmentAction = investmentAction;
+      }
+
+      await onSubmit(expenseData);
 
       // Only reset form after successful submission
       setAmount('');
