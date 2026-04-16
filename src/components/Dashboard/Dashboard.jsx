@@ -100,14 +100,28 @@ const Dashboard = () => {
         updates.bankBalance = (profile.bankBalance || 0) - expenseData.amount;
         updates.creditCardDue = Math.max((profile.creditCardDue || 0) - expenseData.amount, 0);
       }
-      // Handle investments separately (always from bank, goes to stocks/crypto)
+      // Handle investments (buy or sell)
       else if (expenseData.category === 'Investments') {
-        updates.bankBalance = (profile.bankBalance || 0) - expenseData.amount;
+        const action = expenseData.investmentAction || 'buy';
 
-        if (expenseData.subCategory === 'Stocks') {
-          updates.stocksValue = (profile.stocksValue || 0) + expenseData.amount;
-        } else if (expenseData.subCategory === 'Crypto') {
-          updates.cryptoValue = (profile.cryptoValue || 0) + expenseData.amount;
+        if (action === 'buy') {
+          // Buying: deduct from bank, add to investment
+          updates.bankBalance = (profile.bankBalance || 0) - expenseData.amount;
+
+          if (expenseData.subCategory === 'Stocks') {
+            updates.stocksValue = (profile.stocksValue || 0) + expenseData.amount;
+          } else if (expenseData.subCategory === 'Crypto') {
+            updates.cryptoValue = (profile.cryptoValue || 0) + expenseData.amount;
+          }
+        } else if (action === 'sell') {
+          // Selling: add to bank, deduct from investment
+          updates.bankBalance = (profile.bankBalance || 0) + expenseData.amount;
+
+          if (expenseData.subCategory === 'Stocks') {
+            updates.stocksValue = Math.max((profile.stocksValue || 0) - expenseData.amount, 0);
+          } else if (expenseData.subCategory === 'Crypto') {
+            updates.cryptoValue = Math.max((profile.cryptoValue || 0) - expenseData.amount, 0);
+          }
         }
       }
       // Handle regular expenses
@@ -149,14 +163,28 @@ const Dashboard = () => {
         updates.bankBalance = (profile.bankBalance || 0) + expense.amount;
         updates.creditCardDue = (profile.creditCardDue || 0) + expense.amount;
       }
-      // Reverse investment updates (add back to bank, remove from stocks/crypto)
+      // Reverse investment updates (opposite of original action)
       else if (expense.category === 'Investments') {
-        updates.bankBalance = (profile.bankBalance || 0) + expense.amount;
+        const action = expense.investmentAction || 'buy';
 
-        if (expense.subCategory === 'Stocks') {
-          updates.stocksValue = (profile.stocksValue || 0) - expense.amount;
-        } else if (expense.subCategory === 'Crypto') {
-          updates.cryptoValue = (profile.cryptoValue || 0) - expense.amount;
+        if (action === 'buy') {
+          // Reversing a buy: add back to bank, remove from investment
+          updates.bankBalance = (profile.bankBalance || 0) + expense.amount;
+
+          if (expense.subCategory === 'Stocks') {
+            updates.stocksValue = Math.max((profile.stocksValue || 0) - expense.amount, 0);
+          } else if (expense.subCategory === 'Crypto') {
+            updates.cryptoValue = Math.max((profile.cryptoValue || 0) - expense.amount, 0);
+          }
+        } else if (action === 'sell') {
+          // Reversing a sell: remove from bank, add back to investment
+          updates.bankBalance = (profile.bankBalance || 0) - expense.amount;
+
+          if (expense.subCategory === 'Stocks') {
+            updates.stocksValue = (profile.stocksValue || 0) + expense.amount;
+          } else if (expense.subCategory === 'Crypto') {
+            updates.cryptoValue = (profile.cryptoValue || 0) + expense.amount;
+          }
         }
       }
       // Reverse regular expenses

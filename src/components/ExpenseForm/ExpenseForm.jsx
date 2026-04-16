@@ -16,6 +16,7 @@ const ExpenseForm = ({ isOpen, onClose, onSubmit, editingExpense = null }) => {
   const [subCategory, setSubCategory] = useState('');
   const [note, setNote] = useState('');
   const [paymentMethod, setPaymentMethod] = useState('bank'); // 'bank' or 'credit'
+  const [investmentAction, setInvestmentAction] = useState('buy'); // 'buy' or 'sell'
   const [isListening, setIsListening] = useState(false);
   const [showCategorySelect, setShowCategorySelect] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -38,6 +39,7 @@ const ExpenseForm = ({ isOpen, onClose, onSubmit, editingExpense = null }) => {
       setSubCategory(editingExpense.subCategory || '');
       setNote(editingExpense.note || '');
       setPaymentMethod(editingExpense.paymentMethod || 'bank');
+      setInvestmentAction(editingExpense.investmentAction || 'buy');
     } else {
       // Reset form when not editing
       setAmount('');
@@ -46,6 +48,7 @@ const ExpenseForm = ({ isOpen, onClose, onSubmit, editingExpense = null }) => {
       setSubCategory('');
       setNote('');
       setPaymentMethod('bank');
+      setInvestmentAction('buy');
       setShowCategorySelect(false);
     }
   }, [editingExpense, isOpen]);
@@ -166,6 +169,7 @@ const ExpenseForm = ({ isOpen, onClose, onSubmit, editingExpense = null }) => {
         subCategory: type === 'expense' ? subCategory : (note || 'Salary'),
         note,
         paymentMethod,
+        investmentAction: category === 'Investments' ? investmentAction : undefined,
         date: new Date().toISOString()
       });
 
@@ -176,6 +180,7 @@ const ExpenseForm = ({ isOpen, onClose, onSubmit, editingExpense = null }) => {
       setSubCategory('');
       setNote('');
       setPaymentMethod('bank');
+      setInvestmentAction('buy');
       setShowCategorySelect(false);
     } catch (error) {
       console.error('Submission error:', error);
@@ -317,6 +322,39 @@ const ExpenseForm = ({ isOpen, onClose, onSubmit, editingExpense = null }) => {
                   ))}
                 </div>
               )}
+            </div>
+          )}
+
+          {/* Buy/Sell Toggle - Only for Investments */}
+          {type === 'expense' && category === 'Investments' && (
+            <div>
+              <label className="block text-sm font-medium text-zinc-300 mb-2">
+                Action
+              </label>
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => setInvestmentAction('buy')}
+                  className={`flex-1 py-2 rounded-lg text-sm font-medium transition-colors ${
+                    investmentAction === 'buy'
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-zinc-800 text-zinc-300 hover:bg-zinc-700'
+                  }`}
+                >
+                  Buy
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setInvestmentAction('sell')}
+                  className={`flex-1 py-2 rounded-lg text-sm font-medium transition-colors ${
+                    investmentAction === 'sell'
+                      ? 'bg-emerald-600 text-white'
+                      : 'bg-zinc-800 text-zinc-300 hover:bg-zinc-700'
+                  }`}
+                >
+                  Sell
+                </button>
+              </div>
             </div>
           )}
 
