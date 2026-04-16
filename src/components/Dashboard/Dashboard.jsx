@@ -95,8 +95,13 @@ const Dashboard = () => {
     }
     // Handle EXPENSE
     else {
+      // Handle credit card payment (money from bank to pay credit card)
+      if (expenseData.subCategory === 'Credit Card Payment') {
+        updates.bankBalance = (profile.bankBalance || 0) - expenseData.amount;
+        updates.creditCardDue = Math.max((profile.creditCardDue || 0) - expenseData.amount, 0);
+      }
       // Handle investments separately (always from bank, goes to stocks/crypto)
-      if (expenseData.category === 'Investments') {
+      else if (expenseData.category === 'Investments') {
         updates.bankBalance = (profile.bankBalance || 0) - expenseData.amount;
 
         if (expenseData.subCategory === 'Stocks') {
@@ -139,8 +144,13 @@ const Dashboard = () => {
     }
     // Handle EXPENSE deletion/reversal
     else {
+      // Reverse credit card payment (add back to bank, increase credit card due)
+      if (expense.subCategory === 'Credit Card Payment') {
+        updates.bankBalance = (profile.bankBalance || 0) + expense.amount;
+        updates.creditCardDue = (profile.creditCardDue || 0) + expense.amount;
+      }
       // Reverse investment updates (add back to bank, remove from stocks/crypto)
-      if (expense.category === 'Investments') {
+      else if (expense.category === 'Investments') {
         updates.bankBalance = (profile.bankBalance || 0) + expense.amount;
 
         if (expense.subCategory === 'Stocks') {

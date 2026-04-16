@@ -5,7 +5,8 @@ const CATEGORIES = {
   'Fixed Expenses': ['Rent', 'Utilities', 'Subscriptions', 'Insurance'],
   'Daily': ['Groceries', 'Dining', 'Coffee', 'Transportation'],
   'Discretionary': ['Shopping', 'Entertainment', 'Health', 'Other'],
-  'Investments': ['Stocks', 'Crypto']
+  'Investments': ['Stocks', 'Crypto'],
+  'Payments': ['Credit Card Payment']
 };
 
 const ExpenseForm = ({ isOpen, onClose, onSubmit, editingExpense = null }) => {

@@ -1,7 +1,8 @@
 import { useState, useEffect, useMemo } from 'react';
-import { Save, LogOut, Calendar, TrendingUp, TrendingDown, PieChart } from 'lucide-react';
+import { Save, LogOut, Calendar, TrendingUp, TrendingDown, PieChart, Trash2 } from 'lucide-react';
 import { useProfile } from '../hooks/useProfile';
 import { useExpenses } from '../hooks/useExpenses';
+import { useGoals } from '../hooks/useGoals';
 import { useAuth } from '../contexts/AuthContext';
 import { formatCurrency } from '../services/calculations';
 import { format, startOfWeek, startOfMonth, isAfter } from 'date-fns';
@@ -29,7 +30,8 @@ const InputField = ({ label, field, value, onChange, hidden }) => (
 
 const Settings = () => {
   const { profile, updateProfile, loading } = useProfile();
-  const { expenses } = useExpenses();
+  const { expenses, deleteExpense } = useExpenses();
+  const { goals, deleteGoal } = useGoals();
   const { logout, user, numbersHidden } = useAuth();
 
   const [formData, setFormData] = useState({
@@ -42,6 +44,7 @@ const Settings = () => {
 
   const [isSaving, setIsSaving] = useState(false);
   const [isRecalculating, setIsRecalculating] = useState(false);
+  const [isClearing, setIsClearing] = useState(false);
   const [timeFilter, setTimeFilter] = useState('month'); // 'week', 'month', 'all'
   const [activeTab, setActiveTab] = useState('settings'); // 'settings' or 'insights'
 
@@ -221,6 +224,61 @@ const Settings = () => {
     }
   };
 
+  const handleClearAllData = async () => {
+    // Triple confirmation to prevent accidental deletion
+    const confirmText = 'DELETE ALL DATA';
+    const userInput = prompt(
+      `⚠️ WARNING: This will permanently delete ALL your data including:\n\n` +
+      `• All expenses (${expenses?.length || 0} transactions)\n` +
+      `• All goals (${goals?.length || 0} goals)\n` +
+      `• All account balances\n\n` +
+      `This action CANNOT be undone!\n\n` +
+      `Type "${confirmText}" to confirm deletion:`
+    );
+
+    if (userInput !== confirmText) {
+      if (userInput !== null) {
+        alert('Deletion cancelled - confirmation text did not match.');
+      }
+      return;
+    }
+
+    setIsClearing(true);
+    try {
+      // Delete all expenses
+      if (expenses && expenses.length > 0) {
+        for (const expense of expenses) {
+          await deleteExpense(expense.id);
+        }
+      }
+
+      // Delete all goals
+      if (goals && goals.length > 0) {
+        for (const goal of goals) {
+          await deleteGoal(goal.id);
+        }
+      }
+
+      // Reset profile to zero balances
+      const resetData = {
+        bankBalance: 0,
+        stocksValue: 0,
+        cryptoValue: 0,
+        creditCardDue: 0,
+        monthlySalary: 0,
+      };
+      await updateProfile(resetData);
+      setFormData(resetData);
+
+      alert('✅ All data has been cleared successfully! You can now start fresh.');
+    } catch (error) {
+      console.error('Error clearing data:', error);
+      alert('Failed to clear all data. Please try again or contact support.');
+    } finally {
+      setIsClearing(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center">
@@ -356,9 +414,26 @@ const Settings = () => {
                   <p className="text-xs text-zinc-500">Logged in as</p>
                   <p className="text-sm text-white mt-1">{user?.email}</p>
                 </div>
+
+                {/* Danger Zone */}
+                <div className="border border-red-800/50 rounded-lg p-4 bg-red-900/10">
+                  <h3 className="text-sm font-semibold text-red-400 mb-2">Danger Zone</h3>
+                  <p className="text-xs text-zinc-400 mb-3">
+                    Permanently delete all your expenses, goals, and account balances. This cannot be undone.
+                  </p>
+                  <button
+                    onClick={handleClearAllData}
+                    disabled={isClearing}
+                    className="w-full py-3 bg-red-600 hover:bg-red-700 disabled:bg-zinc-700 disabled:cursor-not-allowed text-white font-medium rounded-lg transition-colors flex items-center justify-center gap-2"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                    {isClearing ? 'Clearing All Data...' : 'Clear All Data'}
+                  </button>
+                </div>
+
                 <button
                   onClick={logout}
-                  className="w-full py-3 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg transition-colors flex items-center justify-center gap-2"
+                  className="w-full py-3 bg-zinc-700 hover:bg-zinc-600 text-white font-medium rounded-lg transition-colors flex items-center justify-center gap-2"
                 >
                   <LogOut className="w-4 h-4" />
                   Logout
